@@ -44,10 +44,9 @@ int Socket::getSocket() {return userSocket;};
 int Socket::closeSocket() {return close(userSocket);};
 
 
-// getLengthPointer(): get length of pointer
-socklen_t Socket::getLengthPointer() {
-    socklen_t len = sizeof(userAddress);
-    return len;
+// getAddressSize(): get length of pointer
+socklen_t Socket::getAddressSize() {
+    return sizeof(userAddress);
 };
 
 

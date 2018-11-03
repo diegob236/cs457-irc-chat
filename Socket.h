@@ -14,15 +14,15 @@
 #include <iostream>
 
 
-
 using namespace std; 
+
 
 class Socket {
     
     public: 
         Socket() {}
         struct sockaddr * getAddressPointer();
-        socklen_t getLengthPointer();
+        socklen_t getAddressSize();
         void setSocket(int skct); 
         int connectSocket(string hostname, int port);
         int getSocket();
