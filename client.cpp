@@ -62,10 +62,13 @@ int connectToServer() {
 // readData(): read data from server
 void readData() {
     while (true) {
-        char stringBuffer[2048];
-        memset(stringBuffer, 0, sizeof(stringBuffer));    //change made here. Zeros out buffer.
-        ssize_t recvMsgSize = recv(sock, stringBuffer, 2048, 0);
-        cout << stringBuffer;
+        memset(&buffer, 0, sizeof(buffer));
+        recv(sock, (char *)&buffer, sizeof(buffer), 0);
+        if (strcmp(buffer, "/EXIT\n") == 0){
+            cout << "Closing connection..." << endl << endl;
+            exit(0);
+        }
+        cout << buffer;
     }
 }
 
@@ -75,10 +78,6 @@ void writeData() {
     while(true){
         string s;
         getline(cin, s);
-        if (s == "EXIT"){
-            cout << "Closing connection..." << endl;
-            break;
-        }
         s += "\n";
         write(sock, s.c_str(), s.size());
     }
@@ -106,12 +105,11 @@ int main(int argc, char *argv[]) {
     // Connect to server
     if (connectToServer() < 0) exit(-1);
 
-    // Start write thread
+    // Start read/write threads
     thread writeThread(&writeData);
-    writeThread.join();
-
-    // Start read thread
     thread readThread(&readData);
+
+    writeThread.join();
     readThread.join();
 
     return 0; 
