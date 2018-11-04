@@ -64,7 +64,7 @@ void readData() {
     while (true) {
         memset(&buffer, 0, sizeof(buffer));
         recv(sock, (char *)&buffer, sizeof(buffer), 0);
-        if (strcmp(buffer, "/EXIT\n") == 0){
+        if (strcmp(buffer, "/QUIT\n") == 0) {
             cout << "Closing connection..." << endl << endl;
             exit(0);
         }

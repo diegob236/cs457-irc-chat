@@ -16,7 +16,7 @@ bool ready = true;
 // cclient(): handle client connection
 int cclient(shared_ptr<Socket> clientSocket, int id) {
 
-    string msg;
+    string msg, reply;
     ssize_t val;
 
     // While client is connected
@@ -24,14 +24,18 @@ int cclient(shared_ptr<Socket> clientSocket, int id) {
 
         // Get message
         tie(msg,val) = clientSocket.get()->recvString();
-        if (parseCommand(clientSocket, id, msg) < 0) break;
+        switch (parseCommand(clientSocket, id, msg)) {
+            case -1: return 0;
+            case 0: reply = "You sent command: " + msg; break;
+            case 1: reply = "You sent message: " + msg; break;
+            case 2: reply = "Command not recognized. For a list of commands type /help.\n"; break;
+        }
 
         // Send reply
-        string s = "[SERVER] You sent message: " + msg;
-        thread child(&Socket::sendString, clientSocket.get(), s, true);
+        thread child(&Socket::sendString, clientSocket.get(), reply, true);
         child.join();
     }
-    return 1; 
+    return 0; 
 }
 
 
