@@ -10,7 +10,8 @@
 
 using namespace std;
 
-bool ready = true; 
+bool ready = true;
+vector<unique_ptr<thread>> threadList;
 
 
 // cclient(): handle client connection
@@ -23,17 +24,18 @@ int cclient(shared_ptr<Socket> clientSocket, int id) {
     while (true) {
 
         // Get message
-        tie(msg,val) = clientSocket.get()->recvString();
-        switch (parseCommand(clientSocket, id, msg)) {
-            case -1: return 0;
-            case 0: reply = "You sent command: " + msg; break;
-            case 1: reply = "You sent message: " + msg; break;
-            case 2: reply = "Command not recognized. For a list of commands type /help.\n"; break;
-        }
+        tie(msg, val) = clientSocket.get()->recvString();
+        reply = parseCommand(clientSocket, id, msg);
+
+        // Disconnect client if prompted to quit
+        if (reply == "/QUIT") return 0;
 
         // Send reply
-        thread child(&Socket::sendString, clientSocket.get(), reply, true);
-        child.join();
+        else {
+            thread child(&Socket::sendString, clientSocket.get(), reply, true);
+            child.join();
+        }
+        
     }
     return 0; 
 }
@@ -51,7 +53,6 @@ int main(int argc, char * argv[]) {
 
     // Make threadlist and id for client connections
     int id = 0; 
-    vector<unique_ptr<thread>> threadList;
   
     // Accept connections and add to thread list
     while (ready) { 

@@ -11,5 +11,7 @@
 using namespace std;
 
 
-int parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg);
-int handleQUIT(shared_ptr<Socket> clientSocket, int id);
+string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg);
+
+string handleHELP();
+string handleQUIT(shared_ptr<Socket> clientSocket, int id);
