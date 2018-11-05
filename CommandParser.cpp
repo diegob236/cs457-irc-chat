@@ -67,41 +67,110 @@ string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg) 
 string handleHELP() {
     string help = "\nAvailable IRC commands: \n" +
     string("  /AWAY: \n") +
-    string("  /CONNECT: \n") +
+    string("      Parameters:   [message]\n") + 
+    string("      Description:  If a message is given, marks you as being away, otherwise removes your away status and previous message.\n") +
+    string("  /CONNECT:\n") + 
+    string("      Parameters:   <target server> [<port> [<remote server>]]\n") +
+    string("      Description:  Use to try and force a connection to another server. Only available to IRC Operators.\n") +
     string("  /DIE: \n") +
+    string("      Parameters:   [password]\n") + 
+    string("      Description:  If the correct password is provided, and you are an operator, this command will shut down the local server.\n") +
     string("  /HELP: \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Displays the list of available commands\n") +
     string("  /INFO: \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Returns information on the developers and supporters who made this IRC server possible.\n") +
     string("  /INVITE: \n") +
+    string("      Parameters:   <nickname> <channel>\n") + 
+    string("      Description:  Invite <nickname> to <channel>. If channel is invite only, the client doing the inviting must be recognised as being a channel operator.\n") +
     string("  /ISON: \n") +
+    string("      Parameters:   <nickname>{<space><nickname>}\n") + 
+    string("      Description:  Returns a subset of the nicknames you give, showing only those that are currently online.\n") +
     string("  /JOIN: \n") +
+    string("      Parameters:   <channel>{,<channel>} [<key>{,<key>}]\n") + 
+    string("      Description:  Joins one or more channels you provide the names for. The key is optional.\n") +
     string("  /KICK: \n") +
+    string("      Parameters:   <channel> <user> [<comment>]\n") + 
+    string("      Description:  Kicks a user from a channel you specify. \n") +
     string("  /KILL: \n") +
+    string("      Parameters:   <nickname> <comment>\n") + 
+    string("      Description:  This command will disconnect a user from IRC with the given reason. You may provide the nicknames of multiple users as a list seperated by commas.\n") +
     string("  /KNOCK: \n") +
+    string("      Parameters:   <channel>[message]\n") + 
+    string("      Description:  With this command you can request to join a channel with the +I (invite only) flag on it.\n") +
     string("  /LIST: \n") +
+    string("      Parameters:   [<channel>{,<channel>} [<server>]]\n") + 
+    string("      Description:  List channels and their topics.  If  the <channel>  parameter  is  used,  only  the  status  of  that  channel is displayed.\n") +
     string("  /MODE: \n") +
+    string("      Parameters:   <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]\n") + 
+    string("      Description:  Allows both usernames and channels to have their mode changed.\n") +
     string("  /NICK: \n") +
+    string("      Parameters:   <new nickname>\n") + 
+    string("      Description:  Changes your nickname to new nickname.\n") +
     string("  /NOTICE: \n") +
+    string("      Parameters:   <nickname> <text>\n") + 
+    string("      Description:  Sends a private message to nickname.\n") +
     string("  /OPER: \n") +
+    string("      Parameters:   <user> [password]\n") + 
+    string("      Description:  Used by a normal user to obtain operator privileges.\n") +
     string("  /PART: \n") +
+    string("      Parameters:   <channel>{,<channel>}\n") + 
+    string("      Description:  Causes the client sending the message to be removed from the list of active users for all given channels.\n") +
     string("  /PING: \n") +
+    string("      Parameters:   <server1> [<server2>]\n") + 
+    string("      Description:  Used to test the presence of an active client at the other end of the connection.\n") +
     string("  /PONG: \n") +
+    string("      Parameters:   <daemon> [<daemon2>]\n") + 
+    string("      Description:  A reply to ping message.  If parameter <daemon2> is given this message must be forwarded to given daemon.\n") +
     string("  /PRIVMSG: \n") +
+    string("      Parameters:   <receiver>{,<receiver>} [message]\n") + 
+    string("      Description:  Send a private message between users\n") +
     string("  /QUIT: \n") +
+    string("      Parameters:   [message]\n") + 
+    string("      Description:  A client session is ended with an optional quit message.\n") +
     string("  /RESTART: \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Can only be used by an operator to force a server restart itself.\n") +
     string("  /RULES: \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Show the rules file for the local server.\n") +
     string("  /SETNAME: \n") +
+    string("      Parameters:   [new name]\n") + 
+    string("      Description:  Changes the client's real name.\n") +
     string("  /SILENCE: \n") +
+    string("      Parameters:   \n") + 
+    string("      Description:  \n") +
     string("  /TIME: \n") +
+    string("      Parameters:   [server]\n") + 
+    string("      Description:  Returns the local time from the server. If no parameter is given it checks the hosting server.\n") +
     string("  /TOPIC: \n") +
+    string("      Parameters:   <channel> [<topic>]\n") + 
+    string("      Description:  Used to change or view the topic of a channel.\n") +
     string("  /USER: \n") +
+    string("      Parameters:   unknown\n") + 
+    string("      Description:  \n") +
     string("  /USERHOST: \n") +
+    string("      Parameters:   [nickname]\n") + 
+    string("      Description:  Returns the hostname and nickname of a user, and some other miscellanious information.\n") +
     string("  /USERIP: \n") +
+    string("      Parameters:   unknown\n") + 
+    string("      Description:  \n") +
     string("  /USERS: \n") +
+    string("      Parameters:   [server]\n") + 
+    string("      Description:  Returns a list of users logged into the server.\n") +
     string("  /VERSION: \n") +
+    string("      Parameters:   [<server>]\n") + 
+    string("      Description:  Used  to  query  the  version  of  the  server program. Parameter is optional.\n") +
     string("  /WALLOPS: \n") +
+    string("      Parameters:   [message for all operators]\n") + 
+    string("      Description:  Sends  a  message  to  all   operators   currently   online.\n") +
     string("  /WHO: \n") +
-    string("  /WHOIS: \n");
-
+    string("      Parameters:   [<name> [<o>]]\n") + 
+    string("      Description:  Used by a client to generate a query which returns a list of information which 'matches' the <name> parameter given by the client.\n") +
+    string("  /WHOIS: \n") +
+    string("      Parameters:   [<server>] <nickname>\n") + 
+    string("      Description:  Used to query information about particular user.\n");
     return help;
 }
 
