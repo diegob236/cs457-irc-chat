@@ -191,3 +191,29 @@ string handleQUIT(shared_ptr<Socket> clientSocket, int id) {
     clientSocket.get()->closeSocket();
     return "/QUIT";
 }
+
+//INFO
+string handleINFO(){
+    string info = "\n" +
+        string("        ,     \    /      ,        ") + string("\n") +
+        string("       / \    )\__/(     / \       ") + string("\n") +
+        string("      /   \  (_\  /_)   /   \      ") + string("\n") +
+        string(" ____/_____\__\@  @/___/_____\____ ") + string("\n") +
+        string("|             |\../|              |") + string("\n") +
+        string("|              \VV/               |") + string("\n") +
+        string("|         IRC Chat CS 457         |") + string("\n") +
+        string("|            created by           |") + string("\n") +
+        string("| Kat Moore and Diego BatresForno |") + string("\n") +
+        string("|_________________________________|") + string("\n") +
+        string(" |    /\ /      \\       \ /\    | ") + string("\n") +
+        string(" |  /   V        ))       V   \  | ") + string("\n") +
+        string(" |/     `       //        '     \| ") + string("\n") +
+        string(" `              V                '") + string("\n\n\n") +
+        string("This IRC Chat was made possible through the hard work of two CS students at Colorado State University.\n") +
+        string("We couldn't have done it without the support of Professor Francisco Ortega and Aditya.\n") +
+        string("Unfortunately, no dragons contributed to the developement of this project.\n") +
+        string("") +
+        string("") +
+        string("");
+        return info;
+}
