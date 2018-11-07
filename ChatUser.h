@@ -19,11 +19,14 @@ class ChatUser {
         void setUsername(string& username);
         void setUsername(int& id);
         string getUsername();
+        void setChannel(string& channel);
+        string getChannel();
 		shared_ptr<Socket> getSocketPointer();
 
     private:
         string username, realName;
         string password;
+        string channel = "general";
         shared_ptr<Socket> clientSocket;
 
 };
