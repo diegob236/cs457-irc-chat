@@ -16,8 +16,17 @@ using namespace std;
 int guestid = 0;
 bool ready = true;
 vector<unique_ptr<thread>> threadList;
-vector<ChatUser> activeUsers;
-map<string, vector<ChatUser>> channels;
+
+vector<ChatUser> activeUsers;                   // Active Users
+map<string, vector<ChatUser>> channels;         // Channels
+
+
+// removeActiveUser(): remove user from activeUsers when disconnected
+void removeActiveUser(ChatUser user) {
+    for (int i = 0; i < activeUsers.size(); i++) {
+        if (activeUsers[i].getUsername() == user.getUsername()) activeUsers.erase(activeUsers.begin() + i); break;
+    }
+}
 
 
 // cclient(): handle client connection
@@ -39,13 +48,16 @@ int cclient(shared_ptr<Socket> clientSocket) {
 
         // Get message
         tie(msg, val) = user.recvString();
-        reply = parseCommand(user, msg);
+        reply = parseCommand(user, activeUsers, msg);
 
         // Disconnect client if prompted to quit
-        if (reply == "/QUIT") return 0;
+        if (reply == "/QUIT\n") {
+            removeActiveUser(user);
+            return 0;
+        }
 
         // Send reply
-        else {
+        else if (reply != "") {
 			thread child(&ChatUser::sendString, &user, reply);
             child.join();
         }
