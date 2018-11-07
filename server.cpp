@@ -22,8 +22,11 @@ map<string, vector<ChatUser>> channels;         // Channels
 
 // removeUserFromChannel(): remove user from their channel when disconnected
 void removeUserFromChannel(ChatUser user) {
-    for (int i = 0; i < channels[user.getChannel()].size(); i++) {
-        if (channels[user.getChannel()][i].getUsername() == user.getUsername()) channels[user.getChannel()].erase(channels[user.getChannel()].begin() + i); break;
+    for (uint i = 0; i < channels[user.getChannel()].size(); i++) {
+        if (channels[user.getChannel()][i].getUsername() == user.getUsername()) {
+            channels[user.getChannel()].erase(channels[user.getChannel()].begin() + i);
+            break;
+        }
     }
 }
 
@@ -78,9 +81,6 @@ int main(int argc, char * argv[]) {
     server.bindSocket(); 
     server.listenSocket(); 
     cout << "Waiting for connections..." << endl << endl;
-
-    // Make threadlist and id for client connections
-    int id = 0; 
   
     // Accept connections and add to thread list
     while (ready) { 

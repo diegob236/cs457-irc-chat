@@ -58,7 +58,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 
     // Regular message
     else cout << "[#" << user.getChannel() << ":" << user.getUsername() << "] " << msg;
-    for (int i = 0; i < channels[user.getChannel()].size(); i++)
+    for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername())
             channels[user.getChannel()][i].sendString("[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
     return "";
@@ -207,7 +207,7 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
         if (channels[args[0]].empty()) cout << "New channel " << args[0] << " created by " << user.getUsername() << "." << endl;
         user.setChannel(args[0]);
         channels[args[0]].push_back(user);
-        for (int i = 0; i < channels[args[0]].size(); i++) // Send join message to all users
+        for (uint i = 0; i < channels[args[0]].size(); i++) // Send join message to all users
             if (channels[user.getChannel()][i].getUsername() != user.getUsername())
                 channels[user.getChannel()][i].sendString(user.getUsername() + " has joined the " + user.getChannel() + " channel!\n");
     }
@@ -222,16 +222,16 @@ string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     // Print goodbye message if specified
     if (args.size() > 0) {
         string goodbye = "[#" + user.getChannel() + ":" + user.getUsername() + "] ";
-        for(int i = 0; i < args.size(); i++) goodbye += args[i] + ' ';
+        for(uint i = 0; i < args.size(); i++) goodbye += args[i] + ' ';
         cout << goodbye << endl;
-        for (int i = 0; i < channels[user.getChannel()].size(); i++)
+        for (uint i = 0; i < channels[user.getChannel()].size(); i++)
             if (channels[user.getChannel()][i].getUsername() != user.getUsername()) channels[user.getChannel()][i].sendString(goodbye + "\n");
     }
 
     // Disconnect client
     user.sendString("/QUIT\n");
     cout << user.getUsername() << " has left the chat." << endl;
-    for (int i = 0; i < channels[user.getChannel()].size(); i++)
+    for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername()) channels[user.getChannel()][i].sendString(user.getUsername() + " has left the chat.\n");
     user.disconnect();
     return "/QUIT\n";

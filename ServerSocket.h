@@ -8,12 +8,10 @@
 #include <tuple> 
 #include <unistd.h>
 #include <memory>
-
+#include "Socket.h"
 
 using namespace std; 
 
-
-class Socket; 
 
 class ServerSocket {
 
@@ -27,14 +25,10 @@ public:
 private: 
     void init();
     void setSocketOptions();
-    uint port; 
-    string address; 
+
+    string address;
+    uint port;
     int serverSocket;
-    
     struct sockaddr_in serverAddress; 
     struct in_addr addr;
-    
 };
-
-
-

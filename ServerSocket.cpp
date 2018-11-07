@@ -7,7 +7,7 @@
 using namespace std; 
 
 
-ServerSocket::ServerSocket(uint portNumber): port(portNumber), address("") {
+ServerSocket::ServerSocket(uint portNumber): address(""), port(portNumber) {
     init(); 
     setSocketOptions();
 } 
@@ -46,13 +46,12 @@ tuple<shared_ptr<Socket>,int> ServerSocket::acceptSocket() {
 void ServerSocket::init() {
     serverSocket = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
     const char * cstr = address.c_str();
-    int val = 0;  
     bzero(&serverAddress, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
     if (address == "")
         addr.s_addr =  htonl(INADDR_ANY);
     else {
-        val = inet_aton(cstr,&addr);
+        inet_aton(cstr,&addr);
         serverAddress.sin_addr = addr;
         string addresscpy(inet_ntoa(addr));
         address = addresscpy;  
