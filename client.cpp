@@ -13,7 +13,7 @@ using namespace std;
 
 // Variables
 string hostname;
-string username;
+string username = "unregistered";
 int port;
 string configFile;
 string testFile;
@@ -52,6 +52,9 @@ int connectToServer() {
         printf("Unable to connect to server. \n\n");
         return -1;
     }
+	
+	// Send username to server
+    write(sock, string(username+"\n").c_str(), string(username+"\n").size());
 
     // Connection successful!
     printf("Connected to server! \n\n");
