@@ -38,6 +38,18 @@ string ChatUser::getUsername() {
 }
 
 
+// Get channel
+string ChatUser::getChannel() {
+    return channel;
+}
+
+
+// Set channel
+void ChatUser::setChannel(string& channel) {
+    this->channel = channel;
+}
+
+
 // Get socket
 shared_ptr<Socket> ChatUser::getSocketPointer() {
     return clientSocket;

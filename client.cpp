@@ -5,6 +5,7 @@
 #include <cstring> 
 #include <thread>
 #include <sys/socket.h>
+#include <unistd.h>
 #include <mutex>
 #include "Socket.h"
 
@@ -23,7 +24,9 @@ int sock;
 struct sockaddr_in addr;
 char buffer[2048];
 mutex sendMutex;
-mutex recvMutex; 
+mutex recvMutex;
+
+string channel = "general";
 
 
 // connectToServer(): connect to server
@@ -67,11 +70,27 @@ void readData() {
     while (true) {
         memset(&buffer, 0, sizeof(buffer));
         recv(sock, (char *)&buffer, sizeof(buffer), 0);
+
+        // QUIT
         if (strcmp(buffer, "/QUIT\n") == 0) {
             cout << "Closing connection..." << endl << endl;
             exit(0);
         }
-        cout << buffer;
+
+        // Guest username
+        else if (buffer[0] == '^') {
+            username = string(buffer);
+            username = username.substr(1, username.size()-2);
+            cout << "Your username is [" << username << "]" << endl;
+        }
+
+        // Switch channels
+        else if (buffer[0] == '#') {
+            channel = string(buffer);
+            channel = channel.substr(1, channel.size()-2);
+            cout << "Switched to channel " << channel << endl;
+        }
+        else cout << buffer;
     }
 }
 
@@ -79,6 +98,8 @@ void readData() {
 // writeData(): write data to server
 void writeData() {
     while(true){
+        //usleep(10000);
+        //cout << "[#" << channel << ":" << username << "] ";
         string s;
         getline(cin, s);
         s += "\n";
@@ -109,8 +130,8 @@ int main(int argc, char *argv[]) {
     if (connectToServer() < 0) exit(-1);
 
     // Start read/write threads
-    thread writeThread(&writeData);
     thread readThread(&readData);
+    thread writeThread(&writeData);
 
     writeThread.join();
     readThread.join();

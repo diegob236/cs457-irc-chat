@@ -3,9 +3,8 @@
 // Command arguments
 vector<string> args;
 
-
 // parseCommand(): read IRC command and perform action
-string parseCommand(ChatUser user, vector<ChatUser> users, const string &msg) {
+string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, const string &msg) {
 
     // Parse command and command arguments using a stringstream
     if (msg.at(0) == '/') {
@@ -26,7 +25,7 @@ string parseCommand(ChatUser user, vector<ChatUser> users, const string &msg) {
         if (command == "/INFO") return handleINFO();
         if (command == "/INVITE") return d;
         if (command == "/ISON") return d;
-        if (command == "/JOIN") return d;
+        if (command == "/JOIN") return handleJOIN(user, channels);
         if (command == "/KICK") return d;
         if (command == "/KILL") return d;
         if (command == "/KNOCK") return d;
@@ -39,7 +38,7 @@ string parseCommand(ChatUser user, vector<ChatUser> users, const string &msg) {
         if (command == "/PING") return d;
         if (command == "/PONG") return d;
         if (command == "/PRIVMSG") return d;
-        if (command == "/QUIT") return handleQUIT(user, users);
+        if (command == "/QUIT") return handleQUIT(user, channels);
         if (command == "/RESTART") return d;
         if (command == "/RULES") return d;
         if (command == "/SETNAME") return d;
@@ -58,34 +57,11 @@ string parseCommand(ChatUser user, vector<ChatUser> users, const string &msg) {
     }
 
     // Regular message
-    else cout << "[#general:" << user.getUsername() << "] " << msg;
-    for (int i = 0; i < users.size(); i++)
-        if (users[i].getUsername() != user.getUsername()) users[i].sendString("[#general:" + user.getUsername() + "] " + msg);
+    else cout << "[#" << user.getChannel() << ":" << user.getUsername() << "] " << msg;
+    for (int i = 0; i < channels[user.getChannel()].size(); i++)
+        if (channels[user.getChannel()][i].getUsername() != user.getUsername())
+            channels[user.getChannel()][i].sendString("[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
     return "";
-}
-
-
-//INFO
-string handleINFO() {
-    string info =   R"***(        ,     \    /      ,        )***" "\n"
-                    R"***(       / \    )\__/(     / \       )***" "\n" 
-                    R"***(      /   \  (_\  /_)   /   \      )***" "\n" 
-                    R"***( ____/_____\__\@  @/___/_____\____ )***" "\n" 
-                    R"***(|             |\../|              |)***" "\n" 
-                    R"***(|              \VV/               |)***" "\n" 
-                    R"***(|         IRC Chat CS 457         |)***" "\n" 
-                    R"***(|            created by           |)***" "\n" 
-                    R"***(|   Kat Moore and Diego Batres    |)***" "\n" 
-                    R"***(|_________________________________|)***" "\n" 
-                    R"***( |    /\ /      \\       \ /\    | )***" "\n" 
-                    R"***( |  /   V        ))       V   \  | )***" "\n" 
-                    R"***( |/     `       //        '     \| )***" "\n" 
-                    R"***( `              V                ')***" "\n\n\n" 
-                    "This IRC Chat was made possible through the hard work \nof two CS students at Colorado State University.\n\n"
-                    "We couldn't have done it without the support of \nProfessor Francisco Ortega and Aditya.\n\n"
-                    "*Disclaimer* Fortunately, no dragons contributed to the \ndevelopement of this project.\n";
-                                 
-    return info; 
 }
 
 
@@ -201,23 +177,62 @@ string handleHELP() {
 }
 
 
+// INFO
+string handleINFO() {
+    string info =   R"***(        ,     \    /      ,        )***" "\n"
+                    R"***(       / \    )\__/(     / \       )***" "\n" 
+                    R"***(      /   \  (_\  /_)   /   \      )***" "\n" 
+                    R"***( ____/_____\__\@  @/___/_____\____ )***" "\n" 
+                    R"***(|             |\../|              |)***" "\n" 
+                    R"***(|              \VV/               |)***" "\n" 
+                    R"***(|         IRC Chat CS 457         |)***" "\n" 
+                    R"***(|            created by           |)***" "\n" 
+                    R"***(|   Kat Moore and Diego Batres    |)***" "\n" 
+                    R"***(|_________________________________|)***" "\n" 
+                    R"***( |    /\ /      \\       \ /\    | )***" "\n" 
+                    R"***( |  /   V        ))       V   \  | )***" "\n" 
+                    R"***( |/     `       //        '     \| )***" "\n" 
+                    R"***( `              V                ')***" "\n\n\n" 
+                    "This IRC Chat was made possible through the hard work \nof two CS students at Colorado State University.\n\n"
+                    "We couldn't have done it without the support of \nProfessor Francisco Ortega and Aditya.\n\n"
+                    "*Disclaimer* Fortunately, no dragons contributed to the \ndevelopement of this project.\n";
+                                 
+    return info; 
+}
+
+
+// JOIN
+string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+    if (args.size() > 0) {
+        if (channels[args[0]].empty()) cout << "New channel " << args[0] << " created by " << user.getUsername() << "." << endl;
+        user.setChannel(args[0]);
+        channels[args[0]].push_back(user);
+        for (int i = 0; i < channels[args[0]].size(); i++) // Send join message to all users
+            if (channels[user.getChannel()][i].getUsername() != user.getUsername())
+                channels[user.getChannel()][i].sendString(user.getUsername() + " has joined the " + user.getChannel() + " channel!\n");
+    }
+    else return "/JOIN: Please specify a channel name.\n";
+    return "You have now joined the " + user.getChannel() + " channel!\n";
+}
+
+
 // QUIT
-string handleQUIT(ChatUser user, vector<ChatUser> users) {
+string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
     // Print goodbye message if specified
     if (args.size() > 0) {
-        string goodbye = "[#general:" + user.getUsername() + "] ";
+        string goodbye = "[#" + user.getChannel() + ":" + user.getUsername() + "] ";
         for(int i = 0; i < args.size(); i++) goodbye += args[i] + ' ';
         cout << goodbye << endl;
-        for (int i = 0; i < users.size(); i++)
-            if (users[i].getUsername() != user.getUsername()) users[i].sendString(goodbye + "\n");
+        for (int i = 0; i < channels[user.getChannel()].size(); i++)
+            if (channels[user.getChannel()][i].getUsername() != user.getUsername()) channels[user.getChannel()][i].sendString(goodbye + "\n");
     }
 
     // Disconnect client
     user.sendString("/QUIT\n");
     cout << user.getUsername() << " has left the chat." << endl;
-    for (int i = 0; i < users.size(); i++)
-        if (users[i].getUsername() != user.getUsername()) users[i].sendString(user.getUsername() + " has left the chat.\n");
+    for (int i = 0; i < channels[user.getChannel()].size(); i++)
+        if (channels[user.getChannel()][i].getUsername() != user.getUsername()) channels[user.getChannel()][i].sendString(user.getUsername() + " has left the chat.\n");
     user.disconnect();
     return "/QUIT\n";
 }

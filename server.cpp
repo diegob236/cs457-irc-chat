@@ -17,14 +17,13 @@ int guestid = 0;
 bool ready = true;
 vector<unique_ptr<thread>> threadList;
 
-vector<ChatUser> activeUsers;                   // Active Users
 map<string, vector<ChatUser>> channels;         // Channels
 
 
-// removeActiveUser(): remove user from activeUsers when disconnected
-void removeActiveUser(ChatUser user) {
-    for (int i = 0; i < activeUsers.size(); i++) {
-        if (activeUsers[i].getUsername() == user.getUsername()) activeUsers.erase(activeUsers.begin() + i); break;
+// removeUserFromChannel(): remove user from their channel when disconnected
+void removeUserFromChannel(ChatUser user) {
+    for (int i = 0; i < channels[user.getChannel()].size(); i++) {
+        if (channels[user.getChannel()][i].getUsername() == user.getUsername()) channels[user.getChannel()].erase(channels[user.getChannel()].begin() + i); break;
     }
 }
 
@@ -38,9 +37,12 @@ int cclient(shared_ptr<Socket> clientSocket) {
 	// Create user and set username
 	ChatUser user(clientSocket);
 	tie(username, val) = user.recvString();
-	if (username == "unregistered\n") user.setUsername(guestid);
+	if (username == "unregistered\n") {
+        user.setUsername(guestid);
+        user.sendString("^" + user.getUsername() + "\n");
+    }
 	else user.setUsername(username);
-    activeUsers.push_back(user);
+    channels[user.getChannel()].push_back(user);
     cout << user.getUsername() << " has joined the chat." << endl;
 
     // While client is connected
@@ -48,11 +50,11 @@ int cclient(shared_ptr<Socket> clientSocket) {
 
         // Get message
         tie(msg, val) = user.recvString();
-        reply = parseCommand(user, activeUsers, msg);
+        reply = parseCommand(user, channels, msg);
 
         // Disconnect client if prompted to quit
         if (reply == "/QUIT\n") {
-            removeActiveUser(user);
+            removeUserFromChannel(user);
             return 0;
         }
 

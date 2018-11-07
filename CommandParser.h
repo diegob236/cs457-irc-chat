@@ -12,8 +12,9 @@
 using namespace std;
 
 
-string parseCommand(ChatUser user, vector<ChatUser> users, const string &msg);
+string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, const string &msg);
 
 string handleHELP();
 string handleINFO();
-string handleQUIT(ChatUser user, vector<ChatUser> users);
+string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
+string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels);
