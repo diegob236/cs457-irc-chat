@@ -14,7 +14,7 @@ To join the server as a client run
   - -p: port number (2000)
 
 ## Chat Rules
-After you've joined the server as a client, you may
-1). Type any text and hit enter to send a message to all other clients
-2). Type `/command` (+ its optional or required parameters) to run a command
+After you've joined the server as a client, you may    
+1). Type any text and hit enter to send a message to all other clients    
+2). Type `/command` (+ its optional or required parameters) to run a command    
 3). Type `/help` to see a list of available commands and their parameters
