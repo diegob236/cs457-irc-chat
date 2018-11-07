@@ -23,7 +23,7 @@ string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg) 
         if (command == "/CONNECT") return d;
         if (command == "/DIE") return d;
         if (command == "/HELP") return handleHELP();
-        if (command == "/INFO") return d;
+        if (command == "/INFO") return handleINFO();
         if (command == "/INVITE") return d;
         if (command == "/ISON") return d;
         if (command == "/JOIN") return d;
@@ -60,6 +60,29 @@ string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg) 
     // Regular message
     else cout << "[client " << id << "] " << msg;
     return "You sent message: " + msg;
+}
+
+//INFO
+string handleINFO() {
+    string info =   R"***(        ,     \    /      ,        )***" "\n"
+                    R"***(       / \    )\__/(     / \       )***" "\n" 
+                    R"***(      /   \  (_\  /_)   /   \      )***" "\n" 
+                    R"***( ____/_____\__\@  @/___/_____\____ )***" "\n" 
+                    R"***(|             |\../|              |)***" "\n" 
+                    R"***(|              \VV/               |)***" "\n" 
+                    R"***(|         IRC Chat CS 457         |)***" "\n" 
+                    R"***(|            created by           |)***" "\n" 
+                    R"***(|   Kat Moore and Diego Batres    |)***" "\n" 
+                    R"***(|_________________________________|)***" "\n" 
+                    R"***( |    /\ /      \\       \ /\    | )***" "\n" 
+                    R"***( |  /   V        ))       V   \  | )***" "\n" 
+                    R"***( |/     `       //        '     \| )***" "\n" 
+                    R"***( `              V                ')***" "\n\n\n" 
+                    "This IRC Chat was made possible through the hard work \nof two CS students at Colorado State University.\n\n"
+                    "We couldn't have done it without the support of \nProfessor Francisco Ortega and Aditya.\n\n"
+                    "*Disclaimer* Fortunately, no dragons contributed to the \ndevelopement of this project.\n";
+                                 
+    return info; 
 }
 
 
@@ -190,30 +213,4 @@ string handleQUIT(shared_ptr<Socket> clientSocket, int id) {
     cout << "client " << id << " has left the chat." << endl;
     clientSocket.get()->closeSocket();
     return "/QUIT";
-}
-
-//INFO
-string handleINFO(){
-    string info = "\n" +
-        string("        ,     \    /      ,        ") + string("\n") +
-        string("       / \    )\__/(     / \       ") + string("\n") +
-        string("      /   \  (_\  /_)   /   \      ") + string("\n") +
-        string(" ____/_____\__\@  @/___/_____\____ ") + string("\n") +
-        string("|             |\../|              |") + string("\n") +
-        string("|              \VV/               |") + string("\n") +
-        string("|         IRC Chat CS 457         |") + string("\n") +
-        string("|            created by           |") + string("\n") +
-        string("| Kat Moore and Diego BatresForno |") + string("\n") +
-        string("|_________________________________|") + string("\n") +
-        string(" |    /\ /      \\       \ /\    | ") + string("\n") +
-        string(" |  /   V        ))       V   \  | ") + string("\n") +
-        string(" |/     `       //        '     \| ") + string("\n") +
-        string(" `              V                '") + string("\n\n\n") +
-        string("This IRC Chat was made possible through the hard work of two CS students at Colorado State University.\n") +
-        string("We couldn't have done it without the support of Professor Francisco Ortega and Aditya.\n") +
-        string("Unfortunately, no dragons contributed to the developement of this project.\n") +
-        string("") +
-        string("") +
-        string("");
-        return info;
 }
