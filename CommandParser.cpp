@@ -5,7 +5,7 @@ vector<string> args;
 
 
 // parseCommand(): read IRC command and perform action
-string parseCommand(ChatUser user, const string &msg) {
+string parseCommand(ChatUser user, vector<ChatUser> users, const string &msg) {
 
     // Parse command and command arguments using a stringstream
     if (msg.at(0) == '/') {
@@ -39,7 +39,7 @@ string parseCommand(ChatUser user, const string &msg) {
         if (command == "/PING") return d;
         if (command == "/PONG") return d;
         if (command == "/PRIVMSG") return d;
-        if (command == "/QUIT") return handleQUIT(user);
+        if (command == "/QUIT") return handleQUIT(user, users);
         if (command == "/RESTART") return d;
         if (command == "/RULES") return d;
         if (command == "/SETNAME") return d;
@@ -58,9 +58,12 @@ string parseCommand(ChatUser user, const string &msg) {
     }
 
     // Regular message
-    else cout << "[" << user.getUsername() << "] " << msg;
-    return "You sent message: " + msg;
+    else cout << "[#general:" << user.getUsername() << "] " << msg;
+    for (int i = 0; i < users.size(); i++)
+        if (users[i].getUsername() != user.getUsername()) users[i].sendString("[#general:" + user.getUsername() + "] " + msg);
+    return "";
 }
+
 
 //INFO
 string handleINFO() {
@@ -199,18 +202,22 @@ string handleHELP() {
 
 
 // QUIT
-string handleQUIT(ChatUser user) {
+string handleQUIT(ChatUser user, vector<ChatUser> users) {
 
     // Print goodbye message if specified
     if (args.size() > 0) {
-        cout << "[" << user.getUsername() << "] ";
-        for(int i = 0; i < args.size(); i++) cout << args[i] << ' ';
-        cout << endl;
+        string goodbye = "[#general:" + user.getUsername() + "] ";
+        for(int i = 0; i < args.size(); i++) goodbye += args[i] + ' ';
+        cout << goodbye << endl;
+        for (int i = 0; i < users.size(); i++)
+            if (users[i].getUsername() != user.getUsername()) users[i].sendString(goodbye + "\n");
     }
 
     // Disconnect client
-    user.sendString("/QUIT");
+    user.sendString("/QUIT\n");
     cout << user.getUsername() << " has left the chat." << endl;
+    for (int i = 0; i < users.size(); i++)
+        if (users[i].getUsername() != user.getUsername()) users[i].sendString(user.getUsername() + " has left the chat.\n");
     user.disconnect();
-    return "/QUIT";
+    return "/QUIT\n";
 }
