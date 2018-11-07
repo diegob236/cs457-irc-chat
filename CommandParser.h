@@ -13,5 +13,7 @@ using namespace std;
 
 
 string parseCommand(ChatUser user, const string &msg);
+
 string handleHELP();
+string handleINFO();
 string handleQUIT(ChatUser user);
