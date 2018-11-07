@@ -5,7 +5,7 @@ vector<string> args;
 
 
 // parseCommand(): read IRC command and perform action
-string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg) {
+string parseCommand(ChatUser user, const string &msg) {
 
     // Parse command and command arguments using a stringstream
     if (msg.at(0) == '/') {
@@ -39,7 +39,7 @@ string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg) 
         if (command == "/PING") return d;
         if (command == "/PONG") return d;
         if (command == "/PRIVMSG") return d;
-        if (command == "/QUIT") return handleQUIT(clientSocket, id);
+        if (command == "/QUIT") return handleQUIT(user);
         if (command == "/RESTART") return d;
         if (command == "/RULES") return d;
         if (command == "/SETNAME") return d;
@@ -58,7 +58,7 @@ string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg) 
     }
 
     // Regular message
-    else cout << "[client " << id << "] " << msg;
+    else cout << "[" << user.getUsername() << "] " << msg;
     return "You sent message: " + msg;
 }
 
@@ -176,18 +176,18 @@ string handleHELP() {
 
 
 // QUIT
-string handleQUIT(shared_ptr<Socket> clientSocket, int id) {
+string handleQUIT(ChatUser user) {
 
     // Print goodbye message if specified
     if (args.size() > 0) {
-        cout << "[client " << id << "] ";
+        cout << "[" << user.getUsername() << "] ";
         for(int i = 0; i < args.size(); i++) cout << args[i] << ' ';
         cout << endl;
     }
 
     // Disconnect client
-    clientSocket.get()->sendString("/QUIT");
-    cout << "client " << id << " has left the chat." << endl;
-    clientSocket.get()->closeSocket();
+    user.sendString("/QUIT");
+    cout << user.getUsername() << " has left the chat." << endl;
+    user.disconnect();
     return "/QUIT";
 }

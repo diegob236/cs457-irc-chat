@@ -2,37 +2,51 @@
 #include <string> 
 #include <tuple> 
 #include <thread> 
-#include <vector> 
-#include <memory> 
+#include <vector>
+#include <map>
+#include <memory>
+#include "ChatUser.h"
 #include "Socket.h"
 #include "ServerSocket.h"
 #include "CommandParser.h"
 
 using namespace std;
 
+
+int guestid = 0;
 bool ready = true;
 vector<unique_ptr<thread>> threadList;
+vector<ChatUser> activeUsers;
+map<string, vector<ChatUser>> channels;
 
 
 // cclient(): handle client connection
-int cclient(shared_ptr<Socket> clientSocket, int id) {
+int cclient(shared_ptr<Socket> clientSocket) {
 
-    string msg, reply;
+    string msg, reply, username;
     ssize_t val;
+	
+	// Create user and set username
+	ChatUser user(clientSocket);
+	tie(username, val) = user.recvString();
+	if (username == "unregistered\n") user.setUsername(guestid);
+	else user.setUsername(username);
+    activeUsers.push_back(user);
+    cout << user.getUsername() << " has joined the chat." << endl;
 
     // While client is connected
     while (true) {
 
         // Get message
-        tie(msg, val) = clientSocket.get()->recvString();
-        reply = parseCommand(clientSocket, id, msg);
+        tie(msg, val) = user.recvString();
+        reply = parseCommand(user, msg);
 
         // Disconnect client if prompted to quit
         if (reply == "/QUIT") return 0;
 
         // Send reply
         else {
-            thread child(&Socket::sendString, clientSocket.get(), reply, true);
+			thread child(&ChatUser::sendString, &user, reply);
             child.join();
         }
         
@@ -57,12 +71,10 @@ int main(int argc, char * argv[]) {
     // Accept connections and add to thread list
     while (ready) { 
         shared_ptr<Socket> clientSocket;
-        int val; 
+        int val;
         tie(clientSocket,val) = server.acceptSocket();
-        cout << "\rclient " << id << " has joined the chat." << endl; 
-        unique_ptr<thread> t = make_unique<thread>(cclient, clientSocket, id); 
-        threadList.push_back(move(t)); 
-        id++;
+        unique_ptr<thread> t = make_unique<thread>(cclient, clientSocket); 
+        threadList.push_back(move(t));
     }
 
     // Join threads

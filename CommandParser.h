@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 #include <bits/stdc++.h> 
+#include "ChatUser.h"
 #include "Socket.h"
 
 
 using namespace std;
 
 
-string parseCommand(shared_ptr<Socket> clientSocket, int id, const string &msg);
-
+string parseCommand(ChatUser user, const string &msg);
 string handleHELP();
-string handleQUIT(shared_ptr<Socket> clientSocket, int id);
+string handleQUIT(ChatUser user);
