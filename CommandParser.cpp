@@ -24,7 +24,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/HELP") return handleHELP();
         if (command == "/INFO") return handleINFO();
         if (command == "/INVITE") return d;
-        if (command == "/ISON") return d;
+        if (command == "/ISON") return handleISON(channels);
         if (command == "/JOIN") return handleJOIN(user, channels);
         if (command == "/KICK") return d;
         if (command == "/KILL") return d;
@@ -65,19 +65,6 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 /*######################################################################################################*/
 
 
-// DIE: shut down server (admin only)
-string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
-    if (user.getLevel() == "admin") {
-        sendToEveryone(user, channels, user.getUsername() + " has shut down the server!\n");
-        sendToEveryone(user, channels, "/QUIT\n");
-        user.sendString("Successfully shut down server.\n");
-        user.sendString("/QUIT\n");
-        return "/DIE\n";
-    }
-    else return "/DIE: You do not have the required privileges to run this command!\n";
-}
-
-
 // HELP: get list of commands
 string handleHELP() {
     string help = "\nAvailable IRC commands: \n" +
@@ -100,8 +87,8 @@ string handleHELP() {
     string("      Parameters:   <nickname> <channel>\n") + 
     string("      Description:  Invite <nickname> to <channel>. If channel is invite only, the client doing the inviting must be recognised as being a channel operator.\n") +
     string("  /ISON: \n") +
-    string("      Parameters:   <nickname>{<space><nickname>}\n") + 
-    string("      Description:  Returns a subset of the nicknames you give, showing only those that are currently online.\n") +
+    string("      Parameters:   <nickname>\n") + 
+    string("      Description:  Shows if nickname is currently online.\n") +
     string("  /JOIN: \n") +
     string("      Parameters:   <channel>{,<channel>} [<key>{,<key>}]\n") + 
     string("      Description:  Joins one or more channels you provide the names for. The key is optional.\n") +
@@ -213,6 +200,29 @@ string handleINFO() {
 }
 
 
+// ISON: returns online users
+string handleISON(map<string, vector<ChatUser>> &channels) {
+    if (args.size() > 0){
+        string ison; bool found;
+
+        // Search for user in active channels
+        for(uint j = 0; j < args.size(); j++){
+            found = false;
+            for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+                for (uint i = 0; i < it->second.size(); i++) {
+                    if ((it->second)[i].getUsername() == args[j] && !found) {
+                        ison += args[j] + " is online.\n";
+                        found = true;
+                    }
+                }
+            }
+        }
+        return ison;
+    }
+    else return "/ISON: Please specify one or more users.\n";   
+}
+
+
 // JOIN: join channel
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     if (args.size() > 0) {
@@ -264,6 +274,7 @@ string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
                 if ((it->second)[i].getUsername() == username) {
                     (it->second)[i].sendString(prvmsg + "\n");
                     userFound = true;
+                    return "";
                 }
             }
         }
@@ -323,7 +334,7 @@ bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
 // sendToEveryone(): send message to everyone in channel and display on server
 void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg) {
-    if (msg != "/QUIT\n") cout << msg;
+    cout << msg;
     for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername())
             channels[user.getChannel()][i].sendString(msg);

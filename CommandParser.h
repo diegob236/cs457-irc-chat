@@ -16,6 +16,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleHELP();
 string handleINFO();
+string handleISON(map<string, vector<ChatUser>> &channels);
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleLIST(map<string, vector<ChatUser>> &channels);
 string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels);
