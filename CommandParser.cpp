@@ -58,15 +58,12 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
     }
 
     // Regular message
-    else cout << "[#" << user.getChannel() << ":" << user.getUsername() << "] " << msg;
-    for (uint i = 0; i < channels[user.getChannel()].size(); i++)
-        if (channels[user.getChannel()][i].getUsername() != user.getUsername())
-            channels[user.getChannel()][i].sendString("[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
+    else sendToEveryone(user, channels, "[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
     return "";
 }
 
 
-// HELP
+// HELP: get list of commands
 string handleHELP() {
     string help = "\nAvailable IRC commands: \n" +
     string("  /AWAY: \n") +
@@ -178,7 +175,7 @@ string handleHELP() {
 }
 
 
-// INFO
+// INFO: get server information
 string handleINFO() {
     string info =   R"***(        ,     \    /      ,        )***" "\n"
                     R"***(       / \    )\__/(     / \       )***" "\n" 
@@ -202,48 +199,71 @@ string handleINFO() {
 }
 
 
-// JOIN
+// JOIN: join channel
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     if (args.size() > 0) {
-        if (channels[args[0]].empty()) cout << "New channel " << args[0] << " created by " << user.getUsername() << "." << endl;
+
+        // Create new channel if it doesn't exist
+        if (channels[args[0]].empty()) cout << "New channel #" << args[0] << " created by " << user.getUsername() << "." << endl;
         user.setChannel(args[0]);
-        channels[args[0]].push_back(user);
-        for (uint i = 0; i < channels[args[0]].size(); i++) // Send join message to all users
-            if (channels[user.getChannel()][i].getUsername() != user.getUsername())
-                channels[user.getChannel()][i].sendString(user.getUsername() + " has joined the " + user.getChannel() + " channel!\n");
+
+        // User is not in channel, send join message
+        if (!userIsInChannel(user, channels)) {
+            channels[user.getChannel()].push_back(user);
+            sendToEveryone(user, channels, user.getUsername() + " has joined the #" + user.getChannel() + " channel!\n");
+            return "You have now joined the #" + user.getChannel() + " channel!\n";
+        }
+
+        // User is already in channel, send switch message
+        else {
+            cout << user.getUsername() << " switched back to #" << user.getChannel() << "." << endl;
+            return "Switched back to #" + user.getChannel() + ".\n";
+        }
+
     }
     else return "/JOIN: Please specify a channel name.\n";
-    return "You have now joined the " + user.getChannel() + " channel!\n";
 }
 
 
-// LIST
+// LIST: list channels on server
 string handleLIST(map<string, vector<ChatUser>> &channels) {
     string list = "Channels:\n";
-    for(map<string, vector<ChatUser>>::const_iterator it = channels.begin(); it != channels.end(); it++) {
+    for(map<string, vector<ChatUser>>::const_iterator it = channels.begin(); it != channels.end(); it++)
         list += "  " + it->first + "\n";
-    }
     return list + "\n";
 }
 
 
-// QUIT
+// QUIT: disconnect from server
 string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
     // Print goodbye message if specified
     if (args.size() > 0) {
         string goodbye = "[#" + user.getChannel() + ":" + user.getUsername() + "] ";
         for(uint i = 0; i < args.size(); i++) goodbye += args[i] + ' ';
-        cout << goodbye << endl;
-        for (uint i = 0; i < channels[user.getChannel()].size(); i++)
-            if (channels[user.getChannel()][i].getUsername() != user.getUsername()) channels[user.getChannel()][i].sendString(goodbye + "\n");
+        sendToEveryone(user, channels, goodbye + "\n");
     }
 
     // Disconnect client
     user.sendString("/QUIT\n");
-    cout << user.getUsername() << " has left the chat." << endl;
-    for (uint i = 0; i < channels[user.getChannel()].size(); i++)
-        if (channels[user.getChannel()][i].getUsername() != user.getUsername()) channels[user.getChannel()][i].sendString(user.getUsername() + " has left the chat.\n");
+    sendToEveryone(user, channels, user.getUsername() + " has left the chat.\n");
     user.disconnect();
     return "/QUIT\n";
+}
+
+
+// userIsInChannel(): checks if a user is already in a channel
+bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+    for (uint i = 0; i < channels[user.getChannel()].size(); i++)
+        if (channels[user.getChannel()][i].getUsername() == user.getUsername()) return true;
+    return false;
+}
+
+
+// sendToEveryone(): send message to everyone in channel and display on server
+void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg) {
+    cout << msg;
+    for (uint i = 0; i < channels[user.getChannel()].size(); i++)
+        if (channels[user.getChannel()][i].getUsername() != user.getUsername())
+            channels[user.getChannel()][i].sendString(msg);
 }
