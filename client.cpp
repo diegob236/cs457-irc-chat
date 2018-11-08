@@ -72,7 +72,7 @@ void readData() {
         // QUIT
         if (strcmp(buffer, "/QUIT\n") == 0) {
             cout << "Closing connection..." << endl << endl;
-            close(sock); exit(0);
+            exit(0);
         }
 
         // Guest username
@@ -104,7 +104,7 @@ void writeData() {
 }
 
 
-// writeData(): write data to server
+// writeTestData(): write test data to server
 void writeTestData() {
     ifstream file(testFile);
     if (file.is_open()){
@@ -120,17 +120,19 @@ void writeTestData() {
         
 }
 
+
+// runTests(): run tests
 void runTests(){
     if (connectToServer() < 0) exit(-1);
 
     // Start read/write threads
     thread readThread(&readData);
-    thread writeThread(&writeTestData);
+    thread writeTestThread(&writeTestData);
 
-    writeThread.join();
+    writeTestThread.join();
     readThread.join();
-
 }
+
 
 /* Main method */
 int main(int argc, char *argv[]) {

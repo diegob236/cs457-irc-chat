@@ -99,7 +99,18 @@ void loginUser(ChatUser &user) {
         user.sendString("Admin login successful!\n\n");
         user.setLevel("admin");
     }
-    else user.sendString("Login successful!\n\n");
+    else if (userList[user.getUsername()][1] == "sysop") {
+        user.sendString("Sysop login successful!\n\n");
+        user.setLevel("sysop");
+    }
+    else if (userList[user.getUsername()][1] == "channelop") {
+        user.sendString("Channelop login successful!\n\n");
+        user.setLevel("channelop");
+    }
+    else {
+        user.sendString("Login successful!\n\n");
+        user.setLevel("user");
+    }
 }
 
 

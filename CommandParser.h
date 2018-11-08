@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <ctime>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -16,13 +17,18 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleHELP();
 string handleINFO();
+string handleINVITE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleISON(map<string, vector<ChatUser>> &channels);
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleKILL(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleLIST(map<string, vector<ChatUser>> &channels);
+string handleNICK(ChatUser &user);
+string handleNOTICE(ChatUser &user, map<string, vector<ChatUser>> &channels);
+string handleOPER(map<string, vector<ChatUser>> &channels);
 string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleRULES();
+string handleTIME();
 string handleVERSION();
 
 bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels);

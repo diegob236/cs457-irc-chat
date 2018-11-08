@@ -1,6 +1,7 @@
 #include "CommandParser.h"
 
 
+
 // Command arguments
 vector<string> args;
 
@@ -20,10 +21,10 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 
         // Handle command
         if (command == "/AWAY") return d;
-        if (command == "/DIE") return handleDIE(user, channels);
+        if (command == "/DIE") return d; //handleDIE(user, channels);
         if (command == "/HELP") return handleHELP();
         if (command == "/INFO") return handleINFO();
-        if (command == "/INVITE") return d;
+        if (command == "/INVITE") return handleINVITE(user, channels);
         if (command == "/ISON") return handleISON(channels);
         if (command == "/JOIN") return handleJOIN(user, channels);
         if (command == "/KICK") return d;
@@ -31,9 +32,9 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/KNOCK") return d;
         if (command == "/LIST") return handleLIST(channels);
         if (command == "/MODE") return d;
-        if (command == "/NICK") return d;
-        if (command == "/NOTICE") return d;
-        if (command == "/OPER") return d;
+        if (command == "/NICK") return handleNICK(user);
+        if (command == "/NOTICE") return handleNOTICE(user, channels);
+        if (command == "/OPER") return handleOPER(channels);
         if (command == "/PART") return d;
         if (command == "/PING") return d;
         if (command == "/PONG") return d;
@@ -43,7 +44,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/RULES") return handleRULES();
         if (command == "/SETNAME") return d;
         if (command == "/SILENCE") return d;
-        if (command == "/TIME") return d;
+        if (command == "/TIME") return handleTIME();
         if (command == "/TOPIC") return d;
         if (command == "/USER") return d;
         if (command == "/USERHOST") return d;
@@ -84,9 +85,6 @@ string handleHELP() {
     string("  /AWAY: \n") +
     string("      Parameters:   [message]\n") + 
     string("      Description:  If a message is given, marks you as being away, otherwise removes your away status and previous message.\n") +
-    string("  /CONNECT:\n") + 
-    string("      Parameters:   <target server> [<port> [<remote server>]]\n") +
-    string("      Description:  Use to try and force a connection to another server. Only available to IRC Operators.\n") +
     string("  /DIE: \n") +
     string("      Parameters:   [password]\n") + 
     string("      Description:  If the correct password is provided, and you are an operator, this command will shut down the local server.\n") +
@@ -127,8 +125,8 @@ string handleHELP() {
     string("      Parameters:   <nickname> <text>\n") + 
     string("      Description:  Sends a private message to nickname.\n") +
     string("  /OPER: \n") +
-    string("      Parameters:   <user> [password]\n") + 
-    string("      Description:  Used by a normal user to obtain operator privileges.\n") +
+    string("      Parameters:   <user>\n") + 
+    string("      Description:  Tells you if user is an operator.\n") +
     string("  /PART: \n") +
     string("      Parameters:   <channel>{,<channel>}\n") + 
     string("      Description:  Causes the client sending the message to be removed from the list of active users for all given channels.\n") +
@@ -157,8 +155,8 @@ string handleHELP() {
     string("      Parameters:   \n") + 
     string("      Description:  \n") +
     string("  /TIME: \n") +
-    string("      Parameters:   [server]\n") + 
-    string("      Description:  Returns the local time from the server. If no parameter is given it checks the hosting server.\n") +
+    string("      Parameters:   \n") + 
+    string("      Description:  Returns the local time from the server.\n") +
     string("  /TOPIC: \n") +
     string("      Parameters:   <channel> [<topic>]\n") + 
     string("      Description:  Used to change or view the topic of a channel.\n") +
@@ -210,6 +208,38 @@ string handleINFO() {
                     "We couldn't have done it without the support of \nProfessor Francisco Ortega and Aditya.\n\n"
                     "*Disclaimer* No dragons contributed to the \ndevelopement of this project.\n\n";                             
     return info; 
+}
+
+
+// INVITE: invite user to channel
+string handleINVITE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+
+    // Check for correct number of arguments
+    if (args.size() == 2) {
+
+        bool channelExists = false;
+        string username = args[0];
+        string channel = args[1];
+
+        // Check if channel exists
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++)
+            if ((it->first) == channel) channelExists = true;
+        if (!channelExists) return "/INVITE: Channel " + channel + " does not exist. You can create it by running the command /JOIN " + channel + ".\n";
+
+        // Search for user and send message
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == username) {
+                    (it->second)[i].sendString(user.getUsername() + " has invited you to join #" + channel + "! Join by running the command /JOIN " + channel + ".\n");
+                    return "Invite sent to " + username + ".\n";
+                }
+            }
+        }
+
+        // User was not found
+        return "/INVITE: User " + args[0] + " was not found.\n";
+    }
+    else return "/INVITE: Please specify a user and a channel.\n";
 }
 
 
@@ -308,6 +338,71 @@ string handleLIST(map<string, vector<ChatUser>> &channels) {
 }
 
 
+// NICK: changes username
+string handleNICK(ChatUser &user){
+    if (args.size() == 1){
+        string newUsername = args[0];
+        user.setUsername(newUsername);
+        user.sendString("^" + user.getUsername() + "\n");
+        return "Changed username to " + newUsername + ".\n";
+    }
+    else if (args.size() == 0){
+        return "Your username is " + user.getUsername() + "\n";
+    }
+    else return "/NICK: To change username please run again and specify a username (1 word)\n or run with no args and see current username.\n";
+}
+
+
+// NOTICE: send notice to user
+string handleNOTICE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+
+    // Check for correct number of arguments
+    if (args.size() > 1) {
+        bool userFound = false;
+        string username = args[0];
+        string notice = "[NOTICE:" + user.getUsername() + "] ";
+        for(uint i = 1; i < args.size(); i++) notice += args[i] + ' ';
+
+        // Search for user and send message
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == username) {
+                    (it->second)[i].sendString(notice + "\n");
+                    userFound = true;
+                }
+            }
+        }
+
+        // User was not found
+        if (!userFound) return "/NOTICE: User " + args[0] + " was not found.\n";
+        else return "";
+    }
+    else return "/NOTICE: Please specify a target user and message.\n";
+}
+
+
+// OPER: checks if a user is an admin/channelop/sysop
+string handleOPER(map<string, vector<ChatUser>> &channels){
+    if (args.size() > 0){
+        string username = args[0];
+        bool userFound = false;
+
+        // Search through channels
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == username) {
+                    userFound = true;
+                    if ((it->second)[i].getLevel() != "user") return username + " has " + (it->second)[i].getLevel() + "privileges.\n";
+                }
+            }
+        }
+        if (!userFound) return "/OPER: User " + username + " was not found.\n";
+        else return "User " + username + " has no special privileges.\n";
+    }
+    else return "/OPER: Please specify a single user to check operator privileges.\n";
+}
+
+
 // PRIVMSG: send private message to user
 string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
@@ -360,6 +455,22 @@ string handleRULES(){
                     string("   1.) Don't be rude.\n") +
                     string("   2.) But if you are there are no consequences here.\n\n");
     return rules;
+}
+
+
+// TIME: get server time
+string handleTIME(){
+    if (args.size() < 1){
+        time_t t = time(0);   // get time now
+        struct tm  tstruct;   // Use a time struct for better format
+        char       time[80];
+        tstruct = *localtime(&t);
+        strftime(time, sizeof(time), "%Y-%m-%d.%X\n", &tstruct);
+
+        return time;
+    }
+    else return "/TIME: please specify no arguments to see current server time.\n";
+
 }
 
 
