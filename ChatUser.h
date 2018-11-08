@@ -20,7 +20,7 @@ class ChatUser {
         void disconnect();
 
         void setUsername(string username);
-        void setUsername(int& id) {username = "guest " + to_string(id); id++;}
+        void setUsername(int& id) {username = "guest" + to_string(id); id++;}
         void setPassword(string pswd) {password = pswd;};
         void setChannel(string chn) {channel = chn;}
 

@@ -38,7 +38,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/PART") return d;
         if (command == "/PING") return d;
         if (command == "/PONG") return d;
-        if (command == "/PRIVMSG") return d;
+        if (command == "/PRIVMSG") return handlePRIVMSG(user, channels);
         if (command == "/QUIT") return handleQUIT(user, channels);
         if (command == "/RESTART") return d;
         if (command == "/RULES") return d;
@@ -231,6 +231,35 @@ string handleLIST(map<string, vector<ChatUser>> &channels) {
     for(map<string, vector<ChatUser>>::const_iterator it = channels.begin(); it != channels.end(); it++)
         list += "  " + it->first + "\n";
     return list + "\n";
+}
+
+
+// PRIVMSG: send private message to user
+string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+
+    // Check for correct number of arguments
+    if (args.size() > 1) {
+        bool userFound = false;
+        string username = args[0];
+        string prvmsg = "[PRIVMSG:" + user.getUsername() + "] ";
+        for(uint i = 1; i < args.size(); i++) prvmsg += args[i] + ' ';
+
+        // Search for user and send message
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == username) {
+                    (it->second)[i].sendString(prvmsg + "\n");
+                    userFound = true;
+                    return "";
+                }
+            }
+        }
+
+        // User was not found
+        if (!userFound) return "/PRIVMSG: User " + args[0] + " was not found.\n";
+        else return "";
+    }
+    else return "/PRIVMSG: Please specify a target user and message.\n";
 }
 
 
