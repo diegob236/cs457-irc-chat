@@ -27,7 +27,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/ISON") return handleISON(channels);
         if (command == "/JOIN") return handleJOIN(user, channels);
         if (command == "/KICK") return d;
-        if (command == "/KILL") return d;
+        if (command == "/KILL") return handleKILL(user, channels);
         if (command == "/KNOCK") return d;
         if (command == "/LIST") return handleLIST(channels);
         if (command == "/MODE") return d;
@@ -63,6 +63,19 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 
 /*                                          COMMANDS                                                    */
 /*######################################################################################################*/
+
+
+// DIE: shut down server (admin only)
+string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+    if (user.getLevel() == "admin") {
+        sendToEveryone(user, channels, user.getUsername() + " has shut down the server!\n");
+        sendToEveryone(user, channels, "/QUIT\n");
+        user.sendString("Successfully shut down server.\n");
+        user.sendString("/QUIT\n");
+        return "/DIE\n";
+    }
+    else return "/DIE: You do not have the required privileges to run this command!\n";
+}
 
 
 // HELP: get list of commands
@@ -249,6 +262,43 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 }
 
 
+// KILL: remove user from network
+string handleKILL(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+
+    // Check if user has required permissions
+    if (user.getLevel() == "admin" || user.getLevel() == "sysop") { 
+        if (args.size() > 0) {
+            string username = args[0];
+            string kill = "";
+
+            // Get message if specified
+            if (args.size() > 1) {
+                kill += "[" + user.getUsername() + "] ";
+                for(uint i = 1; i < args.size(); i++) kill += args[i] + ' ';
+            }
+            
+            // Search for user and kill them
+            for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+                for (uint i = 0; i < it->second.size(); i++) {
+                    if ((it->second)[i].getUsername() == username) {
+                        if (kill != "") (it->second)[i].sendString(kill + "\n");
+                        (it->second)[i].sendString("You have been removed from the server by " + user.getUsername() + "!\n");
+                        // (it->second)[i].sendString("/QUIT\n"); <- shuts down server
+                        cout << username << " was removed from the chat by " << user.getUsername() << "." << endl;
+                        return "User " + username + " was removed from the chat!\n";
+                    }
+                }
+            }
+            return "/KILL: User " + username + " was not found.\n";
+        }
+        else return "/KILL: Please specify a user.\n";
+    }
+    else return "/KILL: You do not have the required privileges to run this command!\n";
+
+    
+}
+
+
 // LIST: list channels on server
 string handleLIST(map<string, vector<ChatUser>> &channels) {
     string list = "Channels:\n";
@@ -274,7 +324,6 @@ string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
                 if ((it->second)[i].getUsername() == username) {
                     (it->second)[i].sendString(prvmsg + "\n");
                     userFound = true;
-                    return "";
                 }
             }
         }
@@ -338,4 +387,16 @@ void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, stri
     for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername())
             channels[user.getChannel()][i].sendString(msg);
+}
+
+
+// removeUser(): remove user from all channels
+void removeUser(string username, map<string, vector<ChatUser>> &channels) {
+    for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+        for (uint i = 0; i < it->second.size(); i++) {
+            if ((it->second)[i].getUsername() == username) {
+                (it->second).erase((it->second).begin() + i);
+            }
+        }
+    }
 }
