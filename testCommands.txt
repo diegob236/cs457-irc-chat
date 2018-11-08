@@ -1,0 +1,8 @@
+hello everyone
+This is a test client
+It will display all implemented commands
+/HELP
+Wow that was helpful!
+I wonder what version this server is
+/VERSION 
+/QUIT

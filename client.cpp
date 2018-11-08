@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <mutex>
 #include "Socket.h"
+#include <fstream>
 
 using namespace std;
 
@@ -103,6 +104,34 @@ void writeData() {
 }
 
 
+// writeData(): write data to server
+void writeTestData() {
+    ifstream file(testFile);
+    if (file.is_open()){
+        string line;
+        while(getline(file, line)){
+            printf("%s\n", line.c_str());
+            line += "\n";
+            sleep(1); 
+            write(sock, line.c_str(), line.size());
+        }
+    }
+    else cout << "Unable to open test file.\n";
+        
+}
+
+void runTests(){
+    if (connectToServer() < 0) exit(-1);
+
+    // Start read/write threads
+    thread readThread(&readData);
+    thread writeThread(&writeTestData);
+
+    writeThread.join();
+    readThread.join();
+
+}
+
 /* Main method */
 int main(int argc, char *argv[]) {
 
@@ -121,15 +150,25 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Connect to server
-    if (connectToServer() < 0) exit(-1);
+    //if test file is not equal to empty string then open the file 
+    //make a method if test file exist then call method that runs the tests
+    if(testFile.length() != 0){
+        cout << "\n\nLaunched Terminals for Testing Overlap, please separate them.\n\n";
+        sleep(7);
+        runTests();
+    }
+    else{
 
-    // Start read/write threads
-    thread readThread(&readData);
-    thread writeThread(&writeData);
+        // Connect to server
+        if (connectToServer() < 0) exit(-1);
 
-    writeThread.join();
-    readThread.join();
+        // Start read/write threads
+        thread readThread(&readData);
+        thread writeThread(&writeData);
+
+        writeThread.join();
+        readThread.join();
+    }
 
     return 0; 
 }

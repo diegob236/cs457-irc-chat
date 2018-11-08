@@ -41,7 +41,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/PRIVMSG") return handlePRIVMSG(user, channels);
         if (command == "/QUIT") return handleQUIT(user, channels);
         if (command == "/RESTART") return d;
-        if (command == "/RULES") return d;
+        if (command == "/RULES") return handleRULES();
         if (command == "/SETNAME") return d;
         if (command == "/SILENCE") return d;
         if (command == "/TIME") return d;
@@ -50,7 +50,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/USERHOST") return d;
         if (command == "/USERIP") return d;
         if (command == "/USERS") return d;
-        if (command == "/VERSION") return d;
+        if (command == "/VERSION") return handleVERSION();
         if (command == "/WALLOPS") return d;
         if (command == "/WHO") return d;
         if (command == "/WHOIS") return d;
@@ -193,8 +193,7 @@ string handleINFO() {
                     R"***( `              V                ')***" "\n\n\n" 
                     "This IRC Chat was made possible through the hard work \nof two CS students at Colorado State University.\n\n"
                     "We couldn't have done it without the support of \nProfessor Francisco Ortega and Aditya.\n\n"
-                    "*Disclaimer* Fortunately, no dragons contributed to the \ndevelopement of this project.\n\n";
-                                 
+                    "*Disclaimer* No dragons contributed to the \ndevelopement of this project.\n\n";                             
     return info; 
 }
 
@@ -224,6 +223,17 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     else return "/JOIN: Please specify a channel name.\n";
 }
 
+string handleRULES(){
+    string rules = "Chat Rules are simple:\n" +
+                    string("   1.) Don't be rude.\n") +
+                    string("   2.) But if you are there are no consequences here.\n\n");
+    return rules;
+}
+
+string handleVERSION() {
+    string version = "\nIRC Server Version 1.0\n\n";
+    return version;
+}
 
 // LIST: list channels on server
 string handleLIST(map<string, vector<ChatUser>> &channels) {
