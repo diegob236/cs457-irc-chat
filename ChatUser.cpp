@@ -2,8 +2,8 @@
 
 
 // Receive string
-tuple<string,ssize_t> ChatUser::recvString() {
-    return clientSocket.get()->recvString();
+string ChatUser::recvString() {
+    return get<0>(clientSocket.get()->recvString());
 }
 
 
@@ -20,37 +20,7 @@ void ChatUser::disconnect() {
 
 
 // Set username (string)
-void ChatUser::setUsername(string& username) {
+void ChatUser::setUsername(string username) {
 	username.erase(remove(username.begin(), username.end(), '\n'), username.end());
     this->username = username;
-}
-
-
-// Set username (id)
-void ChatUser::setUsername(int& id) {
-    this->username = "guest " + to_string(id); id++;
-}
-
-
-// Get username
-string ChatUser::getUsername() {
-    return username;
-}
-
-
-// Get channel
-string ChatUser::getChannel() {
-    return channel;
-}
-
-
-// Set channel
-void ChatUser::setChannel(string& channel) {
-    this->channel = channel;
-}
-
-
-// Get socket
-shared_ptr<Socket> ChatUser::getSocketPointer() {
-    return clientSocket;
 }
