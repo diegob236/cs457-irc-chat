@@ -1,8 +1,31 @@
+pw123
+
 hello everyone
+
 This is a test client
 It will display all implemented commands
+
 /HELP
 Wow that was helpful!
+
 I wonder what version this server is
 /VERSION 
+
+What are the rules here?
+/RULES 
+
+I wonder what kind of awesome people made this Chat app?
+/INFO
+
+I would like to join the channel tea
+/JOIN tea 
+
+Nice, this is where the tea is!
+/JOIN coffee
+
+Now lets see all available channels
+/LIST
+
+I had so much fun in this chat! Time to go.
+Goodbye.
 /QUIT

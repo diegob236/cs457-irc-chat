@@ -1,0 +1,23 @@
+pass
+
+Hello There
+This test will show interaction between clients
+
+
+
+Good, lets get this bread
+/JOIN bread
+
+Yeah that bread was good.
+
+
+
+What are all the channels?
+/LIST
+
+/PRIVMSG diegob We're getting an A! That's the tea!
+We just sent private messages @(・○・)@
+
+
+Goodbye.
+/QUIT
