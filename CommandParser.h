@@ -8,7 +8,6 @@
 #include "ChatUser.h"
 #include "Socket.h"
 
-
 using namespace std;
 
 
@@ -17,4 +16,5 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 string handleHELP();
 string handleINFO();
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
+string handleLIST(map<string, vector<ChatUser>> &channels);
 string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels);

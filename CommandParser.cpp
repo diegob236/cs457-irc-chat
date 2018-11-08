@@ -1,5 +1,6 @@
 #include "CommandParser.h"
 
+
 // Command arguments
 vector<string> args;
 
@@ -29,7 +30,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/KICK") return d;
         if (command == "/KILL") return d;
         if (command == "/KNOCK") return d;
-        if (command == "/LIST") return d;
+        if (command == "/LIST") return handleLIST(channels);
         if (command == "/MODE") return d;
         if (command == "/NICK") return d;
         if (command == "/NOTICE") return d;
@@ -172,7 +173,7 @@ string handleHELP() {
     string("      Description:  Used by a client to generate a query which returns a list of information which 'matches' the <name> parameter given by the client.\n") +
     string("  /WHOIS: \n") +
     string("      Parameters:   [<server>] <nickname>\n") + 
-    string("      Description:  Used to query information about particular user.\n");
+    string("      Description:  Used to query information about particular user.\n\n");
     return help;
 }
 
@@ -195,7 +196,7 @@ string handleINFO() {
                     R"***( `              V                ')***" "\n\n\n" 
                     "This IRC Chat was made possible through the hard work \nof two CS students at Colorado State University.\n\n"
                     "We couldn't have done it without the support of \nProfessor Francisco Ortega and Aditya.\n\n"
-                    "*Disclaimer* Fortunately, no dragons contributed to the \ndevelopement of this project.\n";
+                    "*Disclaimer* Fortunately, no dragons contributed to the \ndevelopement of this project.\n\n";
                                  
     return info; 
 }
@@ -213,6 +214,16 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     }
     else return "/JOIN: Please specify a channel name.\n";
     return "You have now joined the " + user.getChannel() + " channel!\n";
+}
+
+
+// LIST
+string handleLIST(map<string, vector<ChatUser>> &channels) {
+    string list = "Channels:\n";
+    for(map<string, vector<ChatUser>>::const_iterator it = channels.begin(); it != channels.end(); it++) {
+        list += "  " + it->first + "\n";
+    }
+    return list + "\n";
 }
 
 
