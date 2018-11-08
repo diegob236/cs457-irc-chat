@@ -369,7 +369,6 @@ string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
                 if ((it->second)[i].getUsername() == username) {
                     (it->second)[i].sendString(prvmsg + "\n");
                     userFound = true;
-                    return "";
                 }
             }
         }
