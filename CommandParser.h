@@ -17,6 +17,7 @@ string handleHELP();
 string handleINFO();
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleLIST(map<string, vector<ChatUser>> &channels);
+string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels);
 
 bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels);
