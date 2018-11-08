@@ -18,12 +18,12 @@ string handleHELP();
 string handleINFO();
 string handleISON(map<string, vector<ChatUser>> &channels);
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
-string handleRULES();
-string handleVERSION();
 string handleLIST(map<string, vector<ChatUser>> &channels);
 string handleNOTICE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels);
+string handleRULES();
+string handleVERSION();
 
 bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels);
 void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg);
