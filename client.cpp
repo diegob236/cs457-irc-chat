@@ -112,7 +112,7 @@ void writeTestData() {
         while(getline(file, line)){
             printf("%s\n", line.c_str());
             line += "\n";
-            sleep(1); 
+            sleep(2); 
             write(sock, line.c_str(), line.size());
         }
     }
