@@ -72,7 +72,7 @@ void readData() {
         // QUIT
         if (strcmp(buffer, "/QUIT\n") == 0) {
             cout << "Closing connection..." << endl << endl;
-            exit(0);
+            close(sock); exit(0);
         }
 
         // Guest username

@@ -20,6 +20,7 @@ string handleINFO();
 string handleINVITE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleISON(map<string, vector<ChatUser>> &channels);
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
+string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleKILL(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleLIST(map<string, vector<ChatUser>> &channels);
 string handleNICK(ChatUser &user);
@@ -33,4 +34,5 @@ string handleVERSION();
 
 bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels);
 void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg);
+void sendToEveryoneBut(ChatUser user, map<string, vector<ChatUser>> &channels, string msg, string username);
 void removeUser(string username, map<string, vector<ChatUser>> &channels);
