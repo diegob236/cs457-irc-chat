@@ -20,7 +20,6 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
 
         // Handle command
         if (command == "/AWAY") return d;
-        if (command == "/CONNECT") return d;
         if (command == "/DIE") return handleDIE(user, channels);
         if (command == "/HELP") return handleHELP();
         if (command == "/INFO") return handleINFO();
@@ -61,6 +60,9 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
     else sendToEveryone(user, channels, "[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
     return "";
 }
+
+/*                                          COMMANDS                                                    */
+/*######################################################################################################*/
 
 
 // DIE: shut down server (admin only)
@@ -236,17 +238,6 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     else return "/JOIN: Please specify a channel name.\n";
 }
 
-string handleRULES(){
-    string rules = "Chat Rules are simple:\n" +
-                    string("   1.) Don't be rude.\n") +
-                    string("   2.) But if you are there are no consequences here.\n\n");
-    return rules;
-}
-
-string handleVERSION() {
-    string version = "\nIRC Server Version 1.0\n\n";
-    return version;
-}
 
 // LIST: list channels on server
 string handleLIST(map<string, vector<ChatUser>> &channels) {
@@ -301,6 +292,25 @@ string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     user.disconnect();
     return "/QUIT\n";
 }
+
+
+// RULES: get server rules
+string handleRULES(){
+    string rules = "Chat Rules are simple:\n" +
+                    string("   1.) Don't be rude.\n") +
+                    string("   2.) But if you are there are no consequences here.\n\n");
+    return rules;
+}
+
+
+// VERSION: get server version
+string handleVERSION() {
+    string version = "\nIRC Server Version 1.0\n\n";
+    return version;
+}
+
+
+/*######################################################################################################*/
 
 
 // userIsInChannel(): checks if a user is already in a channel
