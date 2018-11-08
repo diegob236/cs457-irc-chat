@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string> 
 #include <tuple> 
 #include <thread> 
@@ -13,11 +14,29 @@
 using namespace std;
 
 
+int port;
+string dbpath;
 int guestid = 0;
-bool ready = true;
 vector<unique_ptr<thread>> threadList;
 
-map<string, vector<ChatUser>> channels;         // Channels
+map<string, vector<ChatUser>> channels;
+
+
+// readConfig(): open and read config file
+int readConfig() {
+
+    // Open file
+    ifstream conf; string line;
+    conf.open("chatserver.conf");
+    if (!conf) {
+        cout << "Error reading configuration file." << endl;
+        return -1;
+    }
+
+    // Read port number and dbpath
+    conf >> line >> port >> line >> dbpath;
+    return 0;
+}
 
 
 // removeUserFromChannel(): remove user from their channel when disconnected
@@ -68,22 +87,24 @@ int cclient(shared_ptr<Socket> clientSocket) {
         }
         
     }
-    return 0; 
+    return 0;
 }
 
 
 /* Main method */
 int main(int argc, char * argv[]) {
 
+    // Read configuration file
+    if (readConfig() < 0) exit(0);
+
     // Start server
-    cout << "Server started on port 2000" << endl; 
-    ServerSocket server(2000);
-    server.bindSocket(); 
-    server.listenSocket(); 
+    cout << "Server started on port " << port << endl; 
+    ServerSocket server(port);
+    server.bindSocket(); server.listenSocket(); 
     cout << "Waiting for connections..." << endl << endl;
   
     // Accept connections and add to thread list
-    while (ready) { 
+    while (true) { 
         shared_ptr<Socket> clientSocket;
         int val;
         tie(clientSocket,val) = server.acceptSocket();

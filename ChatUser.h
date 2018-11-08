@@ -25,8 +25,8 @@ class ChatUser {
 		shared_ptr<Socket> getSocketPointer();
 
     private:
-        string username, realName;
-        string password;
+        string username, password, level;
+        bool banned;
         string channel = "general";
         shared_ptr<Socket> clientSocket;
 
