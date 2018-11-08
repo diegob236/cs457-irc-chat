@@ -32,3 +32,10 @@ ChatUser.o: ChatUser.cpp ChatUser.h
 
 clean:
 	-rm *.o server client
+
+test:
+	make
+	gnome-terminal --execute /s/bach/c/under/katbrown/cs457/cs457-p1/server 
+	sleep 3
+	gnome-terminal --execute client -h 127.0.0.1 -u client1 -p 2000 -t testCommands.txt
+
