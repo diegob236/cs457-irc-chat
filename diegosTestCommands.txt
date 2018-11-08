@@ -1,0 +1,21 @@
+word
+
+
+
+Whats up Kat
+How are you?
+
+
+
+
+Where'd you go?
+/JOIN bread
+
+
+Oh I found you here
+/PRIVMSG kat What's the tea Kat?
+
+
+Well, I need to go do more code.
+Goodbye.
+/QUIT
