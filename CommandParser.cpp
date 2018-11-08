@@ -32,7 +32,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/LIST") return handleLIST(channels);
         if (command == "/MODE") return d;
         if (command == "/NICK") return d;
-        if (command == "/NOTICE") return d;
+        if (command == "/NOTICE") return handlePRIVMSG(user, channels);
         if (command == "/OPER") return d;
         if (command == "/PART") return d;
         if (command == "/PING") return d;
@@ -68,9 +68,6 @@ string handleHELP() {
     string("  /AWAY: \n") +
     string("      Parameters:   [message]\n") + 
     string("      Description:  If a message is given, marks you as being away, otherwise removes your away status and previous message.\n") +
-    string("  /CONNECT:\n") + 
-    string("      Parameters:   <target server> [<port> [<remote server>]]\n") +
-    string("      Description:  Use to try and force a connection to another server. Only available to IRC Operators.\n") +
     string("  /DIE: \n") +
     string("      Parameters:   [password]\n") + 
     string("      Description:  If the correct password is provided, and you are an operator, this command will shut down the local server.\n") +
@@ -112,7 +109,7 @@ string handleHELP() {
     string("      Description:  Sends a private message to nickname.\n") +
     string("  /OPER: \n") +
     string("      Parameters:   <user> [password]\n") + 
-    string("      Description:  Used by a normal user to obtain operator privileges.\n") +
+    string("      Description:  Tells you if you are an operator.\n") +
     string("  /PART: \n") +
     string("      Parameters:   <channel>{,<channel>}\n") + 
     string("      Description:  Causes the client sending the message to be removed from the list of active users for all given channels.\n") +
@@ -263,6 +260,35 @@ string handleLIST(map<string, vector<ChatUser>> &channels) {
     for(map<string, vector<ChatUser>>::const_iterator it = channels.begin(); it != channels.end(); it++)
         list += "  " + it->first + "\n";
     return list + "\n";
+}
+
+
+// NOTICE: send notice to user
+string handleNOTICE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+
+    // Check for correct number of arguments
+    if (args.size() > 1) {
+        bool userFound = false;
+        string username = args[0];
+        string notice = "[NOTICE:" + user.getUsername() + "] ";
+        for(uint i = 1; i < args.size(); i++) notice += args[i] + ' ';
+
+        // Search for user and send message
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == username) {
+                    (it->second)[i].sendString(notice + "\n");
+                    userFound = true;
+                    return "";
+                }
+            }
+        }
+
+        // User was not found
+        if (!userFound) return "/NOTICE: User " + args[0] + " was not found.\n";
+        else return "";
+    }
+    else return "/NOTICE: Please specify a target user and message.\n";
 }
 
 
