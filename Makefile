@@ -5,18 +5,24 @@
 CC = g++ -g
 CFLAGS = -Wall -c
 LFLAGS = -Wall -pthread
-SOBJS = Socket.o ServerSocket.o CommandParser.o ChatUser.o
-COBJS = Socket.o
+SOBJS = Socket.o ServerSocket.o CommandParser.o ChatUser.o server.o
+COBJS = Socket.o client.o
 INCLUDE = -I.
 
 
 all: server client
 
 server: $(SOBJS)
-	$(CC) $(SOBJS) $(LFLAGS) $(INCLUDE) server.cpp -o server
+	$(CC) $(SOBJS) $(LFLAGS) $(INCLUDE) -o server
 	
 client: $(COBJS)
-	$(CC) $(COBJS) $(LFLAGS) $(INCLUDE) client.cpp -o client
+	$(CC) $(COBJS) $(LFLAGS) $(INCLUDE) -o client
+
+server.o: server.cpp
+	$(CC) server.cpp $(INCLUDE) $(CFLAGS)
+	
+client.o: client.cpp
+	$(CC) client.cpp $(INCLUDE) $(CFLAGS)
 
 Socket.o: Socket.cpp Socket.h
 	$(CC) Socket.cpp $(INCLUDE) $(CFLAGS)

@@ -15,7 +15,7 @@ using namespace std;
 
 // Variables
 string hostname;
-string username = "unregistered";
+string username = "anonymous";
 int port;
 string configFile;
 string testFile;
@@ -59,9 +59,6 @@ int connectToServer() {
 	
 	// Send username to server
     write(sock, string(username+"\n").c_str(), string(username+"\n").size());
-
-    // Connection successful!
-    printf("Connected to server! \n\n");
     return 0;
 }
 
@@ -82,7 +79,7 @@ void readData() {
         else if (buffer[0] == '^') {
             username = string(buffer);
             username = username.substr(1, username.size()-2);
-            cout << "Your username is [" << username << "]" << endl;
+            cout << "Your username is [" << username << "]." << endl;
         }
 
         // Switch channels
@@ -99,8 +96,6 @@ void readData() {
 // writeData(): write data to server
 void writeData() {
     while(true){
-        //usleep(10000);
-        //cout << "[#" << channel << ":" << username << "] ";
         string s;
         getline(cin, s);
         s += "\n";

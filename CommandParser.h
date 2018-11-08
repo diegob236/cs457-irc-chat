@@ -8,7 +8,6 @@
 #include "ChatUser.h"
 #include "Socket.h"
 
-
 using namespace std;
 
 
@@ -19,4 +18,9 @@ string handleINFO();
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleRULES();
 string handleVERSION();
+string handleLIST(map<string, vector<ChatUser>> &channels);
+string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels);
+
+bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels);
+void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg);
