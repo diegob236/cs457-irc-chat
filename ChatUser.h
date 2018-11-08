@@ -14,19 +14,24 @@ class ChatUser {
     public:
         ChatUser(shared_ptr<Socket> cSocket): clientSocket(cSocket) {}
 		ChatUser(){}
-        tuple<string,ssize_t> recvString();
+
+        string recvString();
         void sendString(const string& data);
         void disconnect();
-        void setUsername(string& username);
-        void setUsername(int& id);
-        string getUsername();
-        void setChannel(string& channel);
-        string getChannel();
-		shared_ptr<Socket> getSocketPointer();
+
+        void setUsername(string username);
+        void setUsername(int& id) {username = "guest " + to_string(id); id++;}
+        void setPassword(string pswd) {password = pswd;};
+        void setChannel(string chn) {channel = chn;}
+
+        string getUsername() {return username;}
+        string getPassword() {return password;}
+        string getChannel() {return channel;}
+		shared_ptr<Socket> getSocketPointer() {return clientSocket;}
 
     private:
         string username, password, level;
-        bool banned;
+        bool banned = false;
         string channel = "general";
         shared_ptr<Socket> clientSocket;
 
