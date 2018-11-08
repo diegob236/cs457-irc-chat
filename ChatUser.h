@@ -23,10 +23,12 @@ class ChatUser {
         void setUsername(int& id) {username = "guest" + to_string(id); id++;}
         void setPassword(string pswd) {password = pswd;};
         void setChannel(string chn) {channel = chn;}
+        void setLevel(string lvl) {level = lvl;}
 
         string getUsername() {return username;}
         string getPassword() {return password;}
         string getChannel() {return channel;}
+        string getLevel() {return level;}
 		shared_ptr<Socket> getSocketPointer() {return clientSocket;}
 
     private:

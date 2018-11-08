@@ -21,7 +21,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         // Handle command
         if (command == "/AWAY") return d;
         if (command == "/CONNECT") return d;
-        if (command == "/DIE") return d;
+        if (command == "/DIE") return handleDIE(user, channels);
         if (command == "/HELP") return handleHELP();
         if (command == "/INFO") return handleINFO();
         if (command == "/INVITE") return d;
@@ -60,6 +60,19 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
     // Regular message
     else sendToEveryone(user, channels, "[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
     return "";
+}
+
+
+// DIE: shut down server (admin only)
+string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+    if (user.getLevel() == "admin") {
+        sendToEveryone(user, channels, user.getUsername() + " has shut down the server!\n");
+        sendToEveryone(user, channels, "/QUIT\n");
+        user.sendString("Successfully shut down server.\n");
+        user.sendString("/QUIT\n");
+        return "/DIE\n";
+    }
+    else return "/DIE: You do not have the required privileges to run this command!\n";
 }
 
 
@@ -260,7 +273,6 @@ string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
                 if ((it->second)[i].getUsername() == username) {
                     (it->second)[i].sendString(prvmsg + "\n");
                     userFound = true;
-                    return "";
                 }
             }
         }
@@ -301,7 +313,7 @@ bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
 // sendToEveryone(): send message to everyone in channel and display on server
 void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg) {
-    cout << msg;
+    if (msg != "/QUIT\n") cout << msg;
     for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername())
             channels[user.getChannel()][i].sendString(msg);

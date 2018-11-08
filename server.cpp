@@ -60,8 +60,27 @@ int init() {
 }
 
 
+// removeUserFromChannel(): remove user from their channel when disconnected
+void removeUserFromChannel(ChatUser &user) {
+    for (uint i = 0; i < channels[user.getChannel()].size(); i++) {
+        if (channels[user.getChannel()][i].getUsername() == user.getUsername()) {
+            channels[user.getChannel()].erase(channels[user.getChannel()].begin() + i);
+            break;
+        }
+    }
+}
+
+
 // loginUser(): log in existing user
 void loginUser(ChatUser &user) {
+
+    // Prevent banned users from logging in
+    if(userList[user.getUsername()][2] == "true") {
+        user.sendString("You are banned from this server! Access is denied!\n");
+        user.disconnect();
+        removeUserFromChannel(user);
+        user.sendString("/QUIT\n");
+    }
 
     // Get password
     user.sendString("Please enter your password:\n");
@@ -76,7 +95,11 @@ void loginUser(ChatUser &user) {
     }
 
     // User is logged in
-    user.sendString("Login successful!\n\n");
+    if (userList[user.getUsername()][1] == "admin") {
+        user.sendString("Admin login successful!\n\n");
+        user.setLevel("admin");
+    }
+    else user.sendString("Login successful!\n\n");
 }
 
 
@@ -136,17 +159,6 @@ void authenticateUser(ChatUser &user) {
 }
 
 
-// removeUserFromChannel(): remove user from their channel when disconnected
-void removeUserFromChannel(ChatUser &user) {
-    for (uint i = 0; i < channels[user.getChannel()].size(); i++) {
-        if (channels[user.getChannel()][i].getUsername() == user.getUsername()) {
-            channels[user.getChannel()].erase(channels[user.getChannel()].begin() + i);
-            break;
-        }
-    }
-}
-
-
 // cclient(): handle client connection
 int cclient(shared_ptr<Socket> clientSocket) {
 
@@ -162,6 +174,9 @@ int cclient(shared_ptr<Socket> clientSocket) {
         // Get message
         msg = user.recvString();
         reply = parseCommand(user, channels, msg);
+
+        // Kill server if prompted to die
+        if (reply == "/DIE\n") abort();
 
         // Disconnect client if prompted to quit
         if (reply == "/QUIT\n") {

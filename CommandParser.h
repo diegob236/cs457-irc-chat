@@ -13,6 +13,7 @@ using namespace std;
 
 string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, const string &msg);
 
+string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleHELP();
 string handleINFO();
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
