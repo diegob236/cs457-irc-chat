@@ -28,7 +28,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/JOIN") return handleJOIN(user, channels);
         if (command == "/KICK") return handleKICK(user, channels);
         if (command == "/KILL") return handleKILL(user, channels);
-        if (command == "/KNOCK") return d;
+        if (command == "/KNOCK") return handleKNOCK(user, channels);
         if (command == "/LIST") return handleLIST(channels);
         if (command == "/MODE") return d;
         if (command == "/NICK") return handleNICK(user, channels);
@@ -287,6 +287,37 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
     }
     else return "/JOIN: Please specify a channel name.\n";
+}
+
+
+// KNOCK: send invite request to channel
+string handleKNOCK(ChatUser &user, map<string, vector<ChatUser>> &channels) {
+
+    if (args.size() < 1) return "/KNOCK: Please specify a channel and an optional message if desired.\n";
+
+    bool channelExists = false;
+    string channel = args[0];
+
+    // Check if channel exists
+    for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++)
+        if ((it->first) == channel) channelExists = true;
+    if (!channelExists) return "/KNOCK: Channel " + channel + " does not exist. You can create it by running the command /JOIN " + channel + ".\n";
+
+    string knock = "";
+
+    // Get message if specified
+    if (args.size() > 1) {
+        knock += "[" + user.getUsername() + "] ";
+        for(uint i = 1; i < args.size(); i++) knock += args[i] + ' ';
+    }
+
+    // Send invite message to everyone in channel
+    for (uint i = 0; i < channels[channel].size(); i++) {
+        channels[channel][i].sendString(user.getUsername() + " has requested to join #" + channel + "!\n");
+        if (knock != "") channels[channel][i].sendString(knock + "\n");
+    }
+
+    return "Sent invite request to channel #" + channel + ".\n";
 }
 
 

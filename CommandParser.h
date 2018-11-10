@@ -20,6 +20,7 @@ string handleINFO();
 string handleINVITE(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleISON(map<string, vector<ChatUser>> &channels);
 string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels);
+string handleKNOCK(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleKILL(ChatUser &user, map<string, vector<ChatUser>> &channels);
 string handleLIST(map<string, vector<ChatUser>> &channels);
