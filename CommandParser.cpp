@@ -128,9 +128,15 @@ string handleHELP() {
     string("  /PART: \n") +
     string("      Parameters:   <channel>{,<channel>}\n") + 
     string("      Description:  Causes the client sending the message to be removed from the list of active users for all given channels.\n") +
+    string("  /PING: \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Used to test the presence of an active client at the other end of the connection.\n") +
+    string("  /PONG: \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  A reply to ping message.\n") +
     string("  /PRIVMSG: \n") +
-    string("      Parameters:   <receiver>{,<receiver>} [message]\n") + 
-    string("      Description:  Send a private message between users\n") +
+    string("      Parameters:   <receiver> [message]\n") + 
+    string("      Description:  Send a private message between two users.\n") +
     string("  /QUIT: \n") +
     string("      Parameters:   [message]\n") + 
     string("      Description:  A client session is ended with an optional quit message.\n") +
@@ -505,6 +511,11 @@ string handleOPER(map<string, vector<ChatUser>> &channels){
     else return "/OPER: Please specify a single user to check operator privileges.\n";
 }
 
+
+string handlePING(){
+    string ping = "PING\n";
+    return ping;
+}
 
 // PRIVMSG: send private message to user
 string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
