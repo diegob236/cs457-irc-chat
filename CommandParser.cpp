@@ -557,7 +557,7 @@ bool userIsInChannel(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
 // sendToEveryone(): send message to everyone in channel and display on server
 void sendToEveryone(ChatUser user, map<string, vector<ChatUser>> &channels, string msg) {
-    cout << msg;
+    if (msg != "/QUIT\n") cout << msg;
     for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername())
             channels[user.getChannel()][i].sendString(msg);

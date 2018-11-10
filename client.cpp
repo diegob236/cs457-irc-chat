@@ -70,7 +70,7 @@ void readData() {
         recv(sock, (char *)&buffer, sizeof(buffer), 0);
 
         // QUIT
-        if (strcmp(buffer, "/QUIT\n") == 0) {
+        if (string(buffer).find("/QUIT\n") != std::string::npos) {
             cout << "Closing connection..." << endl << endl;
             close(sock); exit(0);
         }
