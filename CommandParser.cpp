@@ -295,7 +295,14 @@ string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
     // Check for correct number of arguments
     if (user.getLevel() != "user") {
-        if (args.size() == 2) {
+        if (args.size() >= 2) {
+            string kick = "";
+
+            // Get message if specified
+            if (args.size() > 2) {
+                kick += "[" + user.getUsername() + "] ";
+                for(uint i = 2; i < args.size(); i++) kick += args[i] + ' ';
+            }
 
             bool channelExists = false;
             string username = args[0];
@@ -312,6 +319,7 @@ string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels) {
             // Search for user and send message
             for (uint i = 0; i < channels[channel].size(); i++) {
                 if (channels[channel][i].getUsername() == username) {
+                    if (kick != "") channels[channel][i].sendString(kick + "\n");
                     channels[channel][i].sendString("#" + channel + "\n");
                     channels[channel][i].setChannel("general");
                     channels[channel].erase(channels[channel].begin() + i);
