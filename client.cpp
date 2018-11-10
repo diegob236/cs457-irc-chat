@@ -70,23 +70,26 @@ void readData() {
         recv(sock, (char *)&buffer, sizeof(buffer), 0);
 
         // QUIT
-        if (strcmp(buffer, "/QUIT\n") == 0) {
+        if (string(buffer).find("/QUIT\n") != std::string::npos) {
             cout << "Closing connection..." << endl << endl;
-            exit(0);
+            close(sock); exit(0);
         }
 
         // Guest username
         else if (buffer[0] == '^') {
             username = string(buffer);
             username = username.substr(1, username.size()-2);
-            cout << "Your username is [" << username << "]." << endl;
+            cout << "Your username is " << username << "." << endl;
         }
 
         // Switch channels
         else if (buffer[0] == '#') {
-            channel = string(buffer);
-            channel = channel.substr(1, channel.size()-2);
-            cout << "Switched to channel " << channel << endl;
+            string old = string(buffer);
+            old = old.substr(1, old.size()-2);
+            cout << "You have been removed from the #" << old << " channel!" << endl;
+            channel = "general";
+            string join = "/join general\n";
+            write(sock, join.c_str(), join.size());
         }
         else cout << buffer;
     }
