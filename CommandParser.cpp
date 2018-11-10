@@ -31,7 +31,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/KNOCK") return d;
         if (command == "/LIST") return handleLIST(channels);
         if (command == "/MODE") return d;
-        if (command == "/NICK") return handleNICK(user);
+        if (command == "/NICK") return handleNICK(user, channels);
         if (command == "/NOTICE") return handleNOTICE(user, channels);
         if (command == "/OPER") return handleOPER(channels);
         if (command == "/PART") return d;
@@ -58,6 +58,7 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
     else sendToEveryone(user, channels, "[#" + user.getChannel() + ":" + user.getUsername() + "] " + msg);
     return "";
 }
+
 
 /*                                          COMMANDS                                                    */
 /*######################################################################################################*/
@@ -208,7 +209,7 @@ string handleINVITE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
     // Check for correct number of arguments
     if (args.size() == 2) {
 
-        bool channelExists = false;
+        bool channelExists = false, isMember = false;
         string username = args[0];
         string channel = args[1];
 
@@ -216,6 +217,12 @@ string handleINVITE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
         for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++)
             if ((it->first) == channel) channelExists = true;
         if (!channelExists) return "/INVITE: Channel " + channel + " does not exist. You can create it by running the command /JOIN " + channel + ".\n";
+
+        // Check if user is in channel
+        for (uint i = 0; i < channels[channel].size(); i++)
+            if (channels[channel][i].getUsername() == user.getUsername())
+                isMember = true;
+        if (!isMember) return "/INVITE: You must be a member of #" + channel + " to invite other users.\n";
 
         // Search for user and send message
         for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
@@ -287,12 +294,15 @@ string handleJOIN(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
     // Check for correct number of arguments
-    if (user.getLevel() != "user") { 
+    if (user.getLevel() != "user") {
         if (args.size() == 2) {
 
             bool channelExists = false;
             string username = args[0];
             string channel = args[1];
+
+            // Handle #general
+            if (channel == "general") return "/KICK: Cannot remove " + username + " from #general. To ban " + username + " enter the command /KILL " + username + ".\n";
 
             // Check if channel exists
             for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++)
@@ -302,9 +312,8 @@ string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels) {
             // Search for user and send message
             for (uint i = 0; i < channels[channel].size(); i++) {
                 if (channels[channel][i].getUsername() == username) {
-                    channels[channel][i].sendString("You have been removed from the #" + channel + " channel!\n");
-                    channels[channel][i].sendString("#default\n");
-                    channels[channel][i].setChannel("default");
+                    channels[channel][i].sendString("#" + channel + "\n");
+                    channels[channel][i].setChannel("general");
                     channels[channel].erase(channels[channel].begin() + i);
                     sendToEveryoneBut(user, channels, username + " was removed from channel #" + channel + ".\n", username);
                     return username + " successfully removed from channel #" + channel + ".\n";
@@ -312,7 +321,7 @@ string handleKICK(ChatUser &user, map<string, vector<ChatUser>> &channels) {
             }
 
             // User was not found
-            return "/KICK: User " + args[0] + " was not found in channel #" + channel + ".\n";
+            return "/KICK: User " + username + " was not found in channel #" + channel + ".\n";
         }
         else return "/KICK: Please specify a user and a channel.\n";
     }
@@ -367,17 +376,44 @@ string handleLIST(map<string, vector<ChatUser>> &channels) {
 
 
 // NICK: changes username
-string handleNICK(ChatUser &user){
-    if (args.size() == 1){
+string handleNICK(ChatUser &user, map<string, vector<ChatUser>> &channels){
+
+    // Display current username
+    if (args.size() == 0) return "Your username is " + user.getUsername() + ".\n";
+
+    // Change username
+    else if (args.size() == 1){
+        string oldUsername = user.getUsername();
         string newUsername = args[0];
+
+        // Check that username doesn't exist
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == newUsername)
+                    return "/NICK: The username " + newUsername + " is already taken.\n";
+            }
+        }
+
+        // Change username
         user.setUsername(newUsername);
         user.sendString("^" + user.getUsername() + "\n");
+
+        // Replace old username with new username in all channels
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == oldUsername) {
+                    (it->second).erase((it->second).begin() + i);
+                    (it->second).push_back(user);
+                }
+            }
+        }
+
+        // Send notification
+        sendToEveryone(user, channels, oldUsername + " changed their username to " + newUsername + ".\n");
         return "Changed username to " + newUsername + ".\n";
-    }
-    else if (args.size() == 0){
-        return "Your username is " + user.getUsername() + "\n";
-    }
-    else return "/NICK: To change username please run again and specify a username (1 word)\n or run with no args and see current username.\n";
+    } 
+
+    else return "/NICK: Your username can only be one word.\n";
 }
 
 
@@ -534,16 +570,4 @@ void sendToEveryoneBut(ChatUser user, map<string, vector<ChatUser>> &channels, s
     for (uint i = 0; i < channels[user.getChannel()].size(); i++)
         if (channels[user.getChannel()][i].getUsername() != user.getUsername() && channels[user.getChannel()][i].getUsername() != username)
             channels[user.getChannel()][i].sendString(msg);
-}
-
-
-// removeUser(): remove user from all channels
-void removeUser(string username, map<string, vector<ChatUser>> &channels) {
-    for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
-        for (uint i = 0; i < it->second.size(); i++) {
-            if ((it->second)[i].getUsername() == username) {
-                (it->second).erase((it->second).begin() + i);
-            }
-        }
-    }
 }

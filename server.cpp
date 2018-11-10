@@ -134,6 +134,7 @@ void registerUser(ChatUser &user) {
 
     // Send confirmation
     user.sendString("Registered on server as " + user.getUsername() + ".\n");
+    user.setLevel("user");
     user.sendString("Connected to server!\n\n");
 }
 
@@ -147,6 +148,7 @@ void authenticateUser(ChatUser &user) {
     // Create guest user
 	if (username == "anonymous\n") {
         user.setUsername(guestid);
+        user.setLevel("user");
         user.sendString("^" + user.getUsername() + "\n");
         user.sendString("Connected to server!\n\n");
     }
