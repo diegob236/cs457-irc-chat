@@ -26,6 +26,7 @@ class ChatUser {
         void setLevel(string lvl) {level = lvl;}
 
         string getUsername() {return username;}
+        string getHostname() {return "127.0.0.1";}
         string getPassword() {return password;}
         string getChannel() {return channel;}
         string getLevel() {return level;}
