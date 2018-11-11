@@ -35,22 +35,24 @@ string parseCommand(ChatUser &user, map<string, vector<ChatUser>> &channels, con
         if (command == "/NOTICE") return handleNOTICE(user, channels);
         if (command == "/OPER") return handleOPER(channels);
         if (command == "/PART") return d;
+        if (command == "/PING") return handlePING();
+        if (command == "/PONG") return handlePONG();
         if (command == "/PRIVMSG") return handlePRIVMSG(user, channels);
         if (command == "/QUIT") return handleQUIT(user, channels);
         if (command == "/RESTART") return d;
         if (command == "/RULES") return handleRULES();
-        if (command == "/SETNAME") return d;
-        if (command == "/SILENCE") return d;
+        if (command == "/SETNAME") return handleSETNAME(user, channels);
+        if (command == "/SILENCE") return handleSILENCE();
         if (command == "/TIME") return handleTIME();
         if (command == "/TOPIC") return d;
-        if (command == "/USER") return d;
-        if (command == "/USERHOST") return d;
-        if (command == "/USERIP") return d;
-        if (command == "/USERS") return d;
+        if (command == "/USER") return handleUSER(user);
+        if (command == "/USERHOST") return handleUSERHOST(user);
+        if (command == "/USERIP") return handleUSERIP(user);
+        if (command == "/USERS") return handleUSERS(user, channels);
         if (command == "/VERSION") return handleVERSION();
         if (command == "/WALLOPS") return d;
-        if (command == "/WHO") return d;
-        if (command == "/WHOIS") return d;
+        if (command == "/WHO") return handleWHO(user);
+        if (command == "/WHOIS") return handleWHOIS(channels);
         else return "Command not recognized. For a list of commands type /HELP.\n";
     }
 
@@ -150,8 +152,8 @@ string handleHELP() {
     string("      Parameters:   [new name]\n") + 
     string("      Description:  Changes the client's real name.\n") +
     string("  /SILENCE: \n") +
-    string("      Parameters:   \n") + 
-    string("      Description:  \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Silence is a virtue. Run this command for a motivational quote.\n") +
     string("  /TIME: \n") +
     string("      Parameters:   \n") + 
     string("      Description:  Returns the local time from the server.\n") +
@@ -159,14 +161,14 @@ string handleHELP() {
     string("      Parameters:   <channel> [<topic>]\n") + 
     string("      Description:  Used to change or view the topic of a channel.\n") +
     string("  /USER: \n") +
-    string("      Parameters:   unknown\n") + 
-    string("      Description:  \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Returns your username\n") +
     string("  /USERHOST: \n") +
-    string("      Parameters:   [nickname]\n") + 
-    string("      Description:  Returns the hostname and nickname of a user, and some other miscellanious information.\n") +
+    string("      Parameters:   \n") + 
+    string("      Description:  Returns your hostname.\n") +
     string("  /USERIP: \n") +
-    string("      Parameters:   unknown\n") + 
-    string("      Description:  \n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Returns your IP Address.\n") +
     string("  /USERS: \n") +
     string("      Parameters:   [server]\n") + 
     string("      Description:  Returns a list of users logged into the server.\n") +
@@ -177,11 +179,11 @@ string handleHELP() {
     string("      Parameters:   [message for all operators]\n") + 
     string("      Description:  Sends  a  message  to  all   operators   currently   online.\n") +
     string("  /WHO: \n") +
-    string("      Parameters:   [<name> [<o>]]\n") + 
-    string("      Description:  Used by a client to generate a query which returns a list of information which 'matches' the <name> parameter given by the client.\n") +
+    string("      Parameters:   none\n") + 
+    string("      Description:  Returns your username.\n") +
     string("  /WHOIS: \n") +
-    string("      Parameters:   [<server>] <nickname>\n") + 
-    string("      Description:  Used to query information about particular user.\n\n");
+    string("      Parameters:   [username]\n") + 
+    string("      Description:  Returns their username if they're online and their hostname.\n\n");
     return help;
 }
 
@@ -512,10 +514,17 @@ string handleOPER(map<string, vector<ChatUser>> &channels){
 }
 
 
+// PING: returns pong
 string handlePING(){
-    string ping = "PING\n";
-    return ping;
+    return "PONG\n";
 }
+
+
+// PONG: returns ping
+string handlePONG(){
+    return "PING\n";
+}
+
 
 // PRIVMSG: send private message to user
 string handlePRIVMSG(ChatUser &user, map<string, vector<ChatUser>> &channels) {
@@ -572,6 +581,57 @@ string handleRULES(){
 }
 
 
+// SETNAME: sets username just like /NICK
+string handleSETNAME(ChatUser &user, map<string, vector<ChatUser>> &channels){
+    // Display current username
+    if (args.size() == 0) return "Your username is " + user.getUsername() + ". /SETNAME newName to change it.\n";
+
+    // Change username
+    else if (args.size() == 1){
+        string oldUsername = user.getUsername();
+        string newUsername = args[0];
+
+        // Check that username doesn't exist
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == newUsername)
+                    return "/SETNAME: The username " + newUsername + " is already taken.\n";
+            }
+        }
+
+        // Change username
+        user.setUsername(newUsername);
+        user.sendString("^" + user.getUsername() + "\n");
+
+        // Replace old username with new username in all channels
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == oldUsername) {
+                    (it->second).erase((it->second).begin() + i);
+                    (it->second).push_back(user);
+                }
+            }
+        }
+
+        // Send notification
+        sendToEveryone(user, channels, oldUsername + " changed their username to " + newUsername + ".\n");
+        return "Changed username to " + newUsername + ".\n";
+    } 
+
+    else return "/SETNAME: Your username can only be one word.\n";
+}
+
+
+// SILENCE: no params just return a nice quote
+string handleSILENCE(){
+    if (args.size() > 0){
+        return "Cannot be executed with arguments, try again.\n";
+    }
+    else{
+        return "Work hard in silence, let your success make the noise.\n";
+    }
+}
+
 // TIME: get server time
 string handleTIME(){
     if (args.size() < 1){
@@ -587,12 +647,106 @@ string handleTIME(){
 }
 
 
+// USER: returns current username
+string handleUSER(ChatUser &user){
+    // Display current username
+    if (args.size() == 0) return "Your username is " + user.getUsername() + ".\n";
+    else return "Cannot execute /USER with arguments, use /SETNAME newName to change username.\n";
+}
+
+
+// USERHOST: returns current hostname
+string handleUSERHOST(ChatUser &user){
+    // Display current username
+    if (args.size() == 0) return "Your hostname is " + user.getHostname() + ".\n";
+    else return "Cannot execute /USERHOST with arguments.\n";
+}
+
+
+// USERIP: returns current User IP address
+string handleUSERIP(ChatUser &user){
+    // Display current username
+    if (args.size() == 0) return "Your IP Address is " + user.getHostname() + ".\n";
+    else return "Cannot execute /USERIP with arguments.\n";
+}
+
+
+// USERS: returns all users in your channel
+string handleUSERS(ChatUser &user, map<string, vector<ChatUser>> &channels){
+    if (args.size() > 0){
+        return "Cannot execute /USERS with arguments, please try again without arguments.\n";
+    }
+    else{
+        // Go through all users in a channel and display them
+        string allUsers = "";
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                allUsers += channels[user.getChannel()][i].getUsername() + ", ";
+            }
+        }
+        return allUsers + "\n";
+    }
+}
+
+
 // VERSION: get server version
 string handleVERSION() {
     string version = "\nIRC Server Version 1.0\n\n";
     return version;
 }
 
+/*
+// WALLOPS: message all ops
+string handleWALLOPS(ChatUser &user, map<string, vector<ChatUser>> &channels){
+    //find all ops
+    if (args.size() > 0){
+        string channelOps = "";
+
+        // Search through channels and find all channel ops
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getLevel() == "channelop") {
+                    channelOps += (it->second)[i].getUsername() + ", ";
+
+                }
+            }
+        }
+        if (!userFound) return "/OPER: User " + username + " was not found.\n";
+        else return "User " + username + " has no special privileges.\n";
+    }
+    else return "/OPER: Please specify a single user to check operator privileges.\n";
+
+}
+*/
+
+// WHO: returns your username
+string handleWHO(ChatUser &user){
+    if (args.size() == 0) return "You are " + user.getUsername() + ".\n";
+    else return "Cannot execute /WHO with arguments, use /SETNAME newName to change username.\n";
+}
+
+
+// WHOIS: returns the username and hostname of a user
+string handleWHOIS(map<string, vector<ChatUser>> &channels){
+    if (args.size() > 0){
+        string username = args[0];
+        string hostname = "";
+        bool userFound = false;
+        for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
+            for (uint i = 0; i < it->second.size(); i++) {
+                if ((it->second)[i].getUsername() == username) {
+                    userFound = true;
+                    hostname = (it->second)[i].getHostname();
+                }
+            }
+        }
+        if (!userFound) { return username + " was not found, they are offline.\n"; }
+        else return username + " is online on " + hostname + "\n";
+    }
+    else {
+        return "Please run WHOIS with one argument, a username, to learn if they are online and what hostname they have.\n";
+    }
+}
 
 /*######################################################################################################*/
 
