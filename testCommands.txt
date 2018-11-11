@@ -26,6 +26,66 @@ Nice, this is where the tea is!
 Now lets see all available channels
 /LIST
 
+/PING
+
+/PONG
+
+I wonder what time it is.
+/TIME 
+
+What is my hostname?
+/USERHOST
+
+What is my IP Address?
+/USERIP
+
+What is my username?
+/USER 
+
+Lets change that. I would like to be called BigBoss
+/SETNAME BigBosss
+
+/USER
+Looks good! Oh wait, I didn't spell it right! 
+I can also change my user name with /NICK
+/NICK BigBoss 
+/NICK 
+
+Are there other ways to display my username?
+/WHO
+A future implementation will be to return more information about a user with the /who command
+
+A way to check if someone is online is to run /WHOIS theirUsername
+/WHOIS client1 
+
+/WHOIS nobody
+
+In fact, you can display everyone who is online with /USERS 
+/USERS 
+lower case commands also work just fine
+/users 
+
+It would be great if I was an Admin here.
+/OPER BigBoss 
+
+Oh, I guess I am just a test client 
+
+/ISON BigBoss 
+/JOIN WorldDomination
+
+/INVITE MyMinion WorldDomination 
+
+Oh yeah, its just me here.
+/USERS 
+
+Notice works like PrivMsg 
+/NOTICE MyMinion you deserve a raise
+
+/PRIVMSG MyMinion I'm just trying to tell you, you deserve a raise
+Oh yeah, they must be online first.
+Its quiet in here. 
+/SILENCE
+
 I had so much fun in this chat! Time to go.
 Goodbye.
 /QUIT
