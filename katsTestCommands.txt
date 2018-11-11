@@ -19,5 +19,15 @@ What are all the channels?
 We just sent private messages @(・○・)@
 
 
+
+
+Oh looks interesting, I think I will join 
+
+/JOIN BestCodersChannel
+Oh look... 
+/JOIN EvenBetterCodersChannel 
+
+
+
 Goodbye.
 /QUIT
