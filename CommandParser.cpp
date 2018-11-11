@@ -672,19 +672,26 @@ string handleUSERIP(ChatUser &user){
 }
 
 
-// USERS: returns all users in your channel
+// USERS: returns all online users
 string handleUSERS(ChatUser &user, map<string, vector<ChatUser>> &channels){
     if (args.size() > 0){
         return "Cannot execute /USERS with arguments, please try again without arguments.\n";
     }
-    else{
-        // Go through all users in a channel and display them
+    else {
         string allUsers = "";
+        map<string, int> users;
+
+        // Go through all users in every channel and add to map (no duplicate entries)
         for(map<string, vector<ChatUser>>::iterator it = channels.begin(); it != channels.end(); it++) {
             for (uint i = 0; i < it->second.size(); i++) {
-                allUsers += channels[user.getChannel()][i].getUsername() + ", ";
+                users[channels[user.getChannel()][i].getUsername()] += 1;
             }
         }
+
+        // Add users to string
+        for(map<string, int>::iterator it2 = users.begin(); it2 != users.end(); it2++) 
+            allUsers += (it2->first) + ", ";
+
         return allUsers + "\n";
     }
 }
