@@ -1,4 +1,5 @@
 # Chat Client and Server
+Authors: Diego Batres & Kat Moore    
 This project consists of a chat server and chat client that work together to form a chat application with users, channels, direct messages, and other functions. The model is based off the IRC protocol.
 
 ## To compile and run server
