@@ -1,0 +1,6 @@
+katerino pass user false
+diego word user false
+aditya pw user false
+testClient1 pw123 user false
+kat pass user false
+diegob word user false

@@ -16,6 +16,21 @@ Oh I found you here
 /PRIVMSG kat What's the tea Kat?
 
 
+
+/JOIN BestCodersChannel
+This is nice!
+/INVITE kat BestCodersChannel 
+/NOTICE kat we are the best coders 
+
+Who's online right now?
+/USERS
+
+
+/KNOCK EvenBetterCodersChannel What's going on in here guys?
+/JOIN EvenBetterCodersChannel
+I feel like an even better coder too!!
+
+
 Well, I need to go do more code.
 Goodbye.
 /QUIT

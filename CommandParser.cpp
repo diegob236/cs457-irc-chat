@@ -82,9 +82,9 @@ string handleDIE(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 // HELP: get list of commands
 string handleHELP() {
     string help = "\nAvailable IRC commands: \n" +
-    string("  /AWAY: \n") +
-    string("      Parameters:   [message]\n") + 
-    string("      Description:  If a message is given, marks you as being away, otherwise removes your away status and previous message.\n") +
+    //string("  /AWAY: \n") +
+    //string("      Parameters:   [message]\n") + 
+    //string("      Description:  If a message is given, marks you as being away, otherwise removes your away status and previous message.\n") +
     string("  /DIE: \n") +
     string("      Parameters:   [password]\n") + 
     string("      Description:  If the correct password is provided, and you are an operator, this command will shut down the local server.\n") +
@@ -101,8 +101,8 @@ string handleHELP() {
     string("      Parameters:   <nickname>\n") + 
     string("      Description:  Shows if nickname is currently online.\n") +
     string("  /JOIN: \n") +
-    string("      Parameters:   <channel>{,<channel>} [<key>{,<key>}]\n") + 
-    string("      Description:  Joins one or more channels you provide the names for. The key is optional.\n") +
+    string("      Parameters:   <channel>{,<channel>}\n") + 
+    string("      Description:  Joins one or more channels you provide the names for.\n") +
     string("  /KICK: \n") +
     string("      Parameters:   <channel> <user> [<comment>]\n") + 
     string("      Description:  Kicks a user from a channel you specify. \n") +
@@ -115,9 +115,9 @@ string handleHELP() {
     string("  /LIST: \n") +
     string("      Parameters:   [<channel>{,<channel>} [<server>]]\n") + 
     string("      Description:  List channels and their topics.  If  the <channel>  parameter  is  used,  only  the  status  of  that  channel is displayed.\n") +
-    string("  /MODE: \n") +
-    string("      Parameters:   <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]\n") + 
-    string("      Description:  Allows both usernames and channels to have their mode changed.\n") +
+    //string("  /MODE: \n") +
+    //string("      Parameters:   <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]\n") + 
+    //string("      Description:  Allows both usernames and channels to have their mode changed.\n") +
     string("  /NICK: \n") +
     string("      Parameters:   <new nickname>\n") + 
     string("      Description:  Changes your nickname to new nickname.\n") +
@@ -127,9 +127,9 @@ string handleHELP() {
     string("  /OPER: \n") +
     string("      Parameters:   <user>\n") + 
     string("      Description:  Tells you if user is an operator.\n") +
-    string("  /PART: \n") +
-    string("      Parameters:   <channel>{,<channel>}\n") + 
-    string("      Description:  Causes the client sending the message to be removed from the list of active users for all given channels.\n") +
+    //string("  /PART: \n") +
+    //string("      Parameters:   <channel>{,<channel>}\n") + 
+    //string("      Description:  Causes the client sending the message to be removed from the list of active users for all given channels.\n") +
     string("  /PING: \n") +
     string("      Parameters:   none\n") + 
     string("      Description:  Used to test the presence of an active client at the other end of the connection.\n") +
@@ -142,9 +142,9 @@ string handleHELP() {
     string("  /QUIT: \n") +
     string("      Parameters:   [message]\n") + 
     string("      Description:  A client session is ended with an optional quit message.\n") +
-    string("  /RESTART: \n") +
-    string("      Parameters:   none\n") + 
-    string("      Description:  Can only be used by an operator to force a server restart itself.\n") +
+    //string("  /RESTART: \n") +
+    //string("      Parameters:   none\n") + 
+    //string("      Description:  Can only be used by an operator to force a server restart itself.\n") +
     string("  /RULES: \n") +
     string("      Parameters:   none\n") + 
     string("      Description:  Show the rules file for the local server.\n") +
@@ -157,9 +157,9 @@ string handleHELP() {
     string("  /TIME: \n") +
     string("      Parameters:   \n") + 
     string("      Description:  Returns the local time from the server.\n") +
-    string("  /TOPIC: \n") +
-    string("      Parameters:   <channel> [<topic>]\n") + 
-    string("      Description:  Used to change or view the topic of a channel.\n") +
+    //string("  /TOPIC: \n") +
+    //string("      Parameters:   <channel> [<topic>]\n") + 
+    //string("      Description:  Used to change or view the topic of a channel.\n") +
     string("  /USER: \n") +
     string("      Parameters:   none\n") + 
     string("      Description:  Returns your username\n") +
@@ -175,9 +175,9 @@ string handleHELP() {
     string("  /VERSION: \n") +
     string("      Parameters:   [<server>]\n") + 
     string("      Description:  Used  to  query  the  version  of  the  server program. Parameter is optional.\n") +
-    string("  /WALLOPS: \n") +
-    string("      Parameters:   [message for all operators]\n") + 
-    string("      Description:  Sends  a  message  to  all   operators   currently   online.\n") +
+    //string("  /WALLOPS: \n") +
+    //string("      Parameters:   [message for all operators]\n") + 
+    //string("      Description:  Sends  a  message  to  all   operators   currently   online.\n") +
     string("  /WHO: \n") +
     string("      Parameters:   none\n") + 
     string("      Description:  Returns your username.\n") +
