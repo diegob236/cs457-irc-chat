@@ -574,9 +574,10 @@ string handleQUIT(ChatUser &user, map<string, vector<ChatUser>> &channels) {
 
 // RULES: get server rules
 string handleRULES(){
-    string rules = "Chat Rules are simple:\n" +
-                    string("   1.) Don't be rude.\n") +
-                    string("   2.) But if you are there are no consequences here.\n\n");
+    string rules = "After you've joined the server as a client, you may\n" +
+                    string("   1). Type any text and hit enter to send a message to all other clients\n") +
+                    string("   2). Type /command (+ its optional or required parameters) to run a commandn\n") +
+                    string("   3). Type /help to see a list of available commands and their parameters");
     return rules;
 }
 
