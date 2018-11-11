@@ -503,7 +503,7 @@ string handleOPER(map<string, vector<ChatUser>> &channels){
             for (uint i = 0; i < it->second.size(); i++) {
                 if ((it->second)[i].getUsername() == username) {
                     userFound = true;
-                    if ((it->second)[i].getLevel() != "user") return username + " has " + (it->second)[i].getLevel() + "privileges.\n";
+                    if ((it->second)[i].getLevel() != "user") return username + " has " + (it->second)[i].getLevel() + " privileges.\n";
                 }
             }
         }
