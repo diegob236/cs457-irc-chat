@@ -10,9 +10,10 @@
 #include <cstring>
 #include <thread>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <mutex>
-#include "Socket.h"
 #include <fstream>
 
 using namespace std;
