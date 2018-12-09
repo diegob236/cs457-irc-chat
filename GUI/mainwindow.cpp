@@ -4,26 +4,25 @@
 // Variables
 string hostname = "127.0.0.1";
 string username = "anonymous";
-string channel = "general";
 int port = 2000;
 string configFile;
 string testFile;
 string logFile;
+
+QString usercolor;
+bool muted = false;
+string channel = "general";
 
 int sock;
 struct sockaddr_in addr;
 char buffer[2048];
 stringstream ss;
 
-QMutex sendMutex;
-QMutex recvMutex;
-QMutex colorMutex;
 
 // connectToServer(): connect to server
 int MainWindow::connectToServer() {
 
     // Start client socket
-
     ui->textBrowser_2->insertHtml(QString("<span style=\"color:#888888;\">%1<br/></span>").arg(QString::fromStdString("Connecting to " + hostname + ":" + to_string(port) + "...")));
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         ui->textBrowser_2->insertPlainText("Unable to create socket. \n\n");
@@ -57,14 +56,11 @@ int MainWindow::connectToServer() {
 void MainWindow::readData() {
 
     // Recieve messages
+    string message;
     while (true) {
-        string message;
-        QMutexLocker recvlock(&recvMutex);
-        recvlock.relock();
         memset(&buffer, 0, sizeof(buffer));
         recv(sock, (char *)&buffer, sizeof(buffer), 0);
         message = buffer;
-        recvlock.unlock();
 
         // QUIT: close connection
         if (string(message).find("/QUIT\n") != std::string::npos) {
@@ -75,16 +71,22 @@ void MainWindow::readData() {
 
         // Username: switch username (or set guest username)
         else if (message[0] == '^') {
+
+            // Change username
             username = string(message);
             username = username.substr(1, username.find_first_of('\n')-1);
             ui->textBrowser_2->moveCursor(QTextCursor::End);
             ui->textBrowser_2->insertHtml(QString("<span style=\"color:#888888;\">%1<br/></span>").arg(QString::fromStdString("Your username is " + username + ".")));
+
+            // Get hash for new username's color
+            ss << std::hex << qHash(QString::fromStdString(username), 6);
+            usercolor = QString::fromStdString(ss.str().substr(0, 6));
+            ss.str(std::string());
         }
 
-        // Channels: switch channels (after being kicked)
+        // Channels: switch back to general (after being kicked)
         else if (message[0] == '#') {
-            string old = string(message);
-            old = old.substr(1, old.size()-2);
+            string old = message.substr(1, message.size()-2);
             ui->textBrowser_2->moveCursor(QTextCursor::End);
             ui->textBrowser_2->insertHtml(QString("<span style=\"color:#888888;\">%1<br/></span>").arg(QString::fromStdString("You have been removed from the #" + old + " channel!")));
             channel = "general";
@@ -93,7 +95,7 @@ void MainWindow::readData() {
         }
 
         // User message: display user's color and print message
-        else if (message[0] == '[') {
+        else if (message[0] == '[' && !muted) {
 
             // Get user, channel, and message
             string chn = message.substr(1, message.find_first_of(':')-1);
@@ -101,12 +103,9 @@ void MainWindow::readData() {
             string msg = message.substr(message.find_last_of(']')+2);
 
             // Get hash for user's color
-            QMutexLocker colorlock(&colorMutex);
-            colorlock.relock();
             ss << std::hex << qHash(QString::fromStdString(user), 6);
             std::string hash(ss.str().substr(0, 6));
             ss.str(std::string());
-            colorlock.unlock();
 
             // Display message
             ui->textBrowser_2->moveCursor(QTextCursor::End);
@@ -123,7 +122,7 @@ void MainWindow::readData() {
 }
 
 
-// Main Window constructor
+// Main window constructor
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
 
@@ -138,16 +137,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Connect enter key to send button
     connect(ui->lineEdit_2, SIGNAL(returnPressed()), ui->pushButton_2,SIGNAL(clicked()));
-    ui->textBrowser_2->moveCursor (QTextCursor::End);
+    connect(ui->clearchat, SIGNAL(clicked()), ui->textBrowser_2, SLOT(clear()));
+    connect(ui->mute, SIGNAL(stateChanged(int)), this, SLOT(muteMessages()));
+    ui->textBrowser_2->moveCursor(QTextCursor::End);
 }
 
 
 // Main window destructor
 MainWindow::~MainWindow() {
-    QMutexLocker sendlock(&sendMutex);
-    sendlock.relock();
     write(sock, string("/QUIT\n").c_str(), string("/QUIT\n").size());
-    sendlock.unlock();
     ::close(sock);
     delete ui;
     exit(0);
@@ -161,14 +159,17 @@ void MainWindow::on_pushButton_2_clicked() {
     string sendmsg = ui->lineEdit_2->text().toStdString() + "\n";
     if (sendmsg[0] != '/') {
         ui->textBrowser_2->moveCursor(QTextCursor::End);
-        ui->textBrowser_2->insertHtml(QString("<span style=\"color:#0000ff;\">%1</span>").arg(QString::fromStdString(username + ": ")));
+        ui->textBrowser_2->insertHtml(QString("<span style=\"color:#" + usercolor + ";\">%1</span>").arg(QString::fromStdString(username + ": ")));
         ui->textBrowser_2->insertHtml(QString("<span style=\"color:#000000;\">%1<br/></span>").arg(QString::fromStdString(sendmsg)));
     }
 
     // Send message
-    QMutexLocker sendlock(&sendMutex);
-    sendlock.relock();
     write(sock, sendmsg.c_str(), sendmsg.size());
-    sendlock.unlock();
     ui->lineEdit_2->clear();
+}
+
+
+// Toggle mute messages
+void MainWindow::muteMessages() {
+    muted = !muted;
 }

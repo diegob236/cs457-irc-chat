@@ -34,6 +34,7 @@ class MainWindow : public QMainWindow {
         explicit MainWindow(QWidget *parent = nullptr);
         int connectToServer();
         void readData();
+        void muteMessages();
         ~MainWindow();
 
     private slots:

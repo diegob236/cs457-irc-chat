@@ -113,59 +113,6 @@
           <string>Mute messages</string>
          </property>
         </widget>
-        <widget class="QDial" name="dial">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>100</y>
-           <width>50</width>
-           <height>64</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QDial" name="dial_2">
-         <property name="geometry">
-          <rect>
-           <x>70</x>
-           <y>100</y>
-           <width>50</width>
-           <height>64</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QDial" name="dial_3">
-         <property name="geometry">
-          <rect>
-           <x>130</x>
-           <y>100</y>
-           <width>50</width>
-           <height>64</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QDial" name="dial_4">
-         <property name="geometry">
-          <rect>
-           <x>190</x>
-           <y>100</y>
-           <width>50</width>
-           <height>64</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label">
-         <property name="geometry">
-          <rect>
-           <x>70</x>
-           <y>160</y>
-           <width>111</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Spin these dials!</string>
-         </property>
-        </widget>
        </widget>
       </widget>
      </item>
