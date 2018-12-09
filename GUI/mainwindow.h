@@ -15,7 +15,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <mutex>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -34,11 +33,13 @@ class MainWindow : public QMainWindow {
         explicit MainWindow(QWidget *parent = nullptr);
         int connectToServer();
         void readData();
-        void muteMessages();
+        Q_INVOKABLE void displayServerMessage(string message);
+        Q_INVOKABLE void displayUserMessage(string message);
         ~MainWindow();
 
     private slots:
         void on_pushButton_2_clicked();
+        void muteMessages();
 
     private:
         Ui::MainWindow *ui;
