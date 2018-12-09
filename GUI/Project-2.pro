@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+QT       += core
 QT       += core gui
 QT       += concurrent
 
@@ -32,4 +33,5 @@ HEADERS += \
         mainwindow.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    welcome.ui

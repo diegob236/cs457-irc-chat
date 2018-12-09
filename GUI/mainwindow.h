@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QtConcurrent>
+#include <QHash>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -15,6 +17,8 @@
 #include <unistd.h>
 #include <mutex>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
