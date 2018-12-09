@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Connect enter key to send button
     connect(ui->lineEdit_2, SIGNAL(returnPressed()), ui->pushButton_2,SIGNAL(clicked()));
     connect(ui->clearchat, SIGNAL(clicked()), ui->clearchat,SIGNAL(clicked()));
-    ui->textBrowser_2->moveCursor (QTextCursor::End);
+    ui->textBrowser_2->moveCursor (QTextCursor::End); //need to get to the bottom of what this line does
 }
 
 

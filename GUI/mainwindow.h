@@ -38,6 +38,7 @@ class MainWindow : public QMainWindow {
 
     private slots:
         void on_pushButton_2_clicked();
+        void on_clearchat_clicked();
 
     private:
         Ui::MainWindow *ui;

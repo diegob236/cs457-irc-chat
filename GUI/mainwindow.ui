@@ -167,6 +167,47 @@
          </property>
         </widget>
        </widget>
+       <widget class="QWidget" name="PrivateMessages">
+        <attribute name="title">
+         <string>Private Messages</string>
+        </attribute>
+        <widget class="QTextBrowser" name="privateMessageBrowser">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>391</width>
+           <height>161</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="lineEdit_private">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>170</y>
+           <width>291</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="sendButton_private">
+         <property name="geometry">
+          <rect>
+           <x>300</x>
+           <y>170</y>
+           <width>89</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
+       </widget>
       </widget>
      </item>
     </layout>
