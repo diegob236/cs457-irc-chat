@@ -1,6 +1,6 @@
 # Chat Client and Server
 Authors: Diego Batres & Kat Moore    
-This project consists of a chat server and chat client that work together to form a chat application with users, channels, direct messages, and other functions. The model is based off the IRC protocol.
+This project consists of a chat server and chat client (terminal and GUI) that work together to form a chat application with users, channels, direct messages, and other functions. The model is based off the IRC protocol.
 
 ## To compile and run server
 In order to get the server up and running please ensure you are in the project directory then:
@@ -13,6 +13,11 @@ To join the server as a client run
   - -h: hostname  (127.0.0.1)
   - -u: username
   - -p: port number (2000)
+  
+To join using the GUI client:
+  - Open the project in QtCreator.
+  - Run the build.
+  - You will automatically join the server as a guest.
 
 ## Chat Rules
 After you've joined the server as a client, you may    
@@ -34,7 +39,7 @@ A final option to run the testCommands with any client is to append the -t optio
 
 client -h 127.0.0.1 -u newUser -p 2000 -t testCommands.txt
 
-## List of Implemented Commands For Project 1
+## List of Implemented Commands For Project 2
 1. `/HELP` - displays list of implemented commands
 2. `/INFO` - diplays information about the developers of this project
 3. `/ISON` [username] - checks to see if username is online
