@@ -144,6 +144,17 @@ void MainWindow::on_send_clicked() {
         ui->chat_window->insertHtml(QString("<span style=\"color:#" + usercolor + ";\">%1</span>").arg(QString::fromStdString(username + ": ")));
         ui->chat_window->insertHtml(QString("<span style=\"color:#000000;\">%1<br/></span>").arg(QString::fromStdString(sendmsg)));
     }
+    else {
+        string command;
+        istringstream ssmsg(sendmsg);
+        ssmsg >> command;
+        std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+        if (command == "/JOIN") {
+            vector<string> args;
+            while (ssmsg >> command) args.push_back(command);
+            if (args.size() > 0) ui->tabWidget_2->setTabText(0, QString::fromStdString("#" + args[0]));
+        }
+    }
 
     // Send message
     write(sock, sendmsg.c_str(), sendmsg.size());
