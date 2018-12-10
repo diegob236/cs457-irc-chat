@@ -33,7 +33,7 @@
         <attribute name="title">
          <string>#general</string>
         </attribute>
-        <widget class="QTextBrowser" name="textBrowser_2">
+        <widget class="QTextBrowser" name="chat_window">
          <property name="geometry">
           <rect>
            <x>0</x>
@@ -43,7 +43,7 @@
           </rect>
          </property>
         </widget>
-        <widget class="QLineEdit" name="lineEdit_2">
+        <widget class="QLineEdit" name="input">
          <property name="geometry">
           <rect>
            <x>0</x>
@@ -56,7 +56,48 @@
           <string/>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="send">
+         <property name="geometry">
+          <rect>
+           <x>300</x>
+           <y>170</y>
+           <width>89</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="privmsgs">
+        <attribute name="title">
+         <string>Private Messages</string>
+        </attribute>
+        <widget class="QTextBrowser" name="chat_window_privmsg">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>391</width>
+           <height>161</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="input_privmsg">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>170</y>
+           <width>291</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="send_privmsg">
          <property name="geometry">
           <rect>
            <x>300</x>
@@ -74,6 +115,19 @@
         <attribute name="title">
          <string>Options</string>
         </attribute>
+        <widget class="QPushButton" name="setBackground">
+         <property name="geometry">
+          <rect>
+           <x>260</x>
+           <y>70</y>
+           <width>121</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Set Background</string>
+         </property>
+        </widget>
         <widget class="QPushButton" name="clearchat">
          <property name="geometry">
           <rect>
@@ -87,19 +141,6 @@
           <string>Clear Chat</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="setBackground">
-         <property name="geometry">
-          <rect>
-           <x>100</x>
-           <y>70</y>
-           <width>121</width>
-           <height>25</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Set Background</string>
-         </property>
-        </widget>
         <widget class="QCheckBox" name="mute">
          <property name="geometry">
           <rect>
@@ -111,6 +152,19 @@
          </property>
          <property name="text">
           <string>Mute messages</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="clearchat_2">
+         <property name="geometry">
+          <rect>
+           <x>100</x>
+           <y>70</y>
+           <width>151</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Clear Private Messages</string>
          </property>
         </widget>
        </widget>

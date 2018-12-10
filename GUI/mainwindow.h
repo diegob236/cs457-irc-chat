@@ -39,9 +39,11 @@ class MainWindow : public QMainWindow {
 
     signals:
         void displayMessage(QString message);
+        void displayPrivateMessage(QString message);
 
     private slots:
-        void on_pushButton_2_clicked();
+        void on_send_clicked();
+        void on_send_privmsg_clicked();
         void muteMessages();
 
     private:
