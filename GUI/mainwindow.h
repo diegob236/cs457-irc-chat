@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QtConcurrent>
+#include <QHash>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,8 +15,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <mutex>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -30,10 +33,18 @@ class MainWindow : public QMainWindow {
         explicit MainWindow(QWidget *parent = nullptr);
         int connectToServer();
         void readData();
+        void recvServerMessage(string message);
+        void recvUserMessage(string message);
         ~MainWindow();
 
+    signals:
+        void displayMessage(QString message);
+        void displayPrivateMessage(QString message);
+
     private slots:
-        void on_pushButton_2_clicked();
+        void on_send_clicked();
+        void on_send_privmsg_clicked();
+        void muteMessages();
 
     private:
         Ui::MainWindow *ui;

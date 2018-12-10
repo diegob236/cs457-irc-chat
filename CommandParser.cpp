@@ -633,6 +633,7 @@ string handleSILENCE(){
     }
 }
 
+
 // TIME: get server time
 string handleTIME(){
     if (args.size() < 1){
@@ -699,7 +700,7 @@ string handleUSERS(ChatUser &user, map<string, vector<ChatUser>> &channels){
 
 // VERSION: get server version
 string handleVERSION() {
-    string version = "\nIRC Server Version 1.0\n\n";
+    string version = "\nIRC Server Version 2.0\n\n";
     return version;
 }
 
