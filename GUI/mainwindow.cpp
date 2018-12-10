@@ -64,7 +64,7 @@ void MainWindow::readData() {
 
         // QUIT: close connection
         if (string(message).find("/QUIT\n") != std::string::npos) {
-            QMetaObject::invokeMethod(this, "displayServerMessage", Qt::AutoConnection, Q_ARG(string, "Closing connection..."));
+            recvServerMessage("Closing connection...");
             ::close(sock); exit(0);
         }
 
@@ -74,7 +74,7 @@ void MainWindow::readData() {
             // Change username
             username = string(message);
             username = username.substr(1, username.find_first_of('\n')-1);
-            QMetaObject::invokeMethod(this, "displayServerMessage", Qt::AutoConnection, Q_ARG(string, "Your username is " + username + "."));
+            recvServerMessage("Your username is " + username + ".");
 
             // Get hash for new username's color
             ss << std::hex << qHash(QString::fromStdString(username), 6);
@@ -85,21 +85,19 @@ void MainWindow::readData() {
         // Channels: switch back to general (after being kicked)
         else if (message[0] == '#') {
             string old = message.substr(1, message.size()-2);
-            QMetaObject::invokeMethod(this, "displayServerMessage", Qt::AutoConnection, Q_ARG(string, "You have been removed from the #" + old + " channel!"));
+            recvServerMessage("You have been removed from the #" + old + " channel!");
             channel = "general";
             string join = "/join general\n";
             write(sock, join.c_str(), join.size());
         }
 
         // User message: display user's color and print message
-        else if (message[0] == '[' && !muted) {
-            QMetaObject::invokeMethod(this, "displayUserMessage", Qt::AutoConnection, Q_ARG(string, message));
+        else if (message[0] == '[') {
+            if (!muted) recvUserMessage(message);
         }
 
         // Server message: display message in light gray
-        else {
-            QMetaObject::invokeMethod(this, "displayServerMessage", Qt::AutoConnection, Q_ARG(string, message));
-        }
+        else recvServerMessage(message);
     }
 }
 
@@ -115,10 +113,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // Start read thread
     QtConcurrent::run(this, &MainWindow::readData);
 
-    // Connect enter key to send button
-    connect(ui->lineEdit_2, SIGNAL(returnPressed()), ui->pushButton_2,SIGNAL(clicked()));
-    connect(ui->clearchat, SIGNAL(clicked()), ui->textBrowser_2, SLOT(clear()));
-    connect(ui->mute, SIGNAL(stateChanged(int)), this, SLOT(muteMessages()));
+    // Connect slots and signals
+    connect(ui->lineEdit_2, SIGNAL(returnPressed()), ui->pushButton_2,SIGNAL(clicked()));           // Enter key -> send button
+    connect(ui->clearchat, SIGNAL(clicked()), ui->textBrowser_2, SLOT(clear()));                    // Clear chat
+    connect(ui->mute, SIGNAL(stateChanged(int)), this, SLOT(muteMessages()));                       // Mute messages
+    connect(this, SIGNAL(displayMessage(QString)), ui->textBrowser_2, SLOT(insertHtml(QString)));   // Display messages
     ui->textBrowser_2->moveCursor(QTextCursor::End);
 }
 
@@ -156,14 +155,13 @@ void MainWindow::muteMessages() {
 
 
 // displayServerMessage(): display server message
-Q_INVOKABLE void MainWindow::displayServerMessage(string message) {
-    ui->textBrowser_2->moveCursor(QTextCursor::End);
-    ui->textBrowser_2->insertHtml(QString("<span style=\"color:#888888;\">%1<br/></span>").arg(QString::fromStdString(message)));
+void MainWindow::recvServerMessage(string message) {
+    emit displayMessage(QString("<span style=\"color:#888888;\">%1<br/></span>").arg(QString::fromStdString(message)));
 }
 
 
 // displayUserMessage(): display user message
-Q_INVOKABLE void MainWindow::displayUserMessage(string message) {
+void MainWindow::recvUserMessage(string message) {
 
     // Parse user, channel, and message
     string user = message.substr(message.find_first_of(':')+1, message.find_last_of(']')-(message.find_first_of(':')+1));
@@ -176,7 +174,6 @@ Q_INVOKABLE void MainWindow::displayUserMessage(string message) {
     ss.str(std::string());
 
     // Display message
-    ui->textBrowser_2->moveCursor(QTextCursor::End);
-    ui->textBrowser_2->insertHtml(QString::fromStdString("<span style=\"color:#" + color + ";\">%1</span>").arg(QString::fromStdString(user + ": ")));
-    ui->textBrowser_2->insertHtml(QString("<span style=\"color:#000000;\">%1<br/></span>").arg(QString::fromStdString(msg)));
+    emit displayMessage(QString::fromStdString("<span style=\"color:#" + color + ";\">%1</span>").arg(QString::fromStdString(user + ": ")));
+    emit displayMessage(QString("<span style=\"color:#000000;\">%1<br/></span>").arg(QString::fromStdString(msg)));
 }

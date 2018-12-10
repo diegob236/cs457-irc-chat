@@ -33,9 +33,12 @@ class MainWindow : public QMainWindow {
         explicit MainWindow(QWidget *parent = nullptr);
         int connectToServer();
         void readData();
-        Q_INVOKABLE void displayServerMessage(string message);
-        Q_INVOKABLE void displayUserMessage(string message);
+        void recvServerMessage(string message);
+        void recvUserMessage(string message);
         ~MainWindow();
+
+    signals:
+        void displayMessage(QString message);
 
     private slots:
         void on_pushButton_2_clicked();
